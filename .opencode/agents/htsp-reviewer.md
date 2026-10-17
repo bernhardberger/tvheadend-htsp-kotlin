@@ -24,6 +24,10 @@ permissions:
   - action: skill
     resource: "*"
     effect: allow
+  # Exact file and symbol lookups only, on the locator's own pinned model.
+  - action: subagent
+    resource: htsp-locator
+    effect: allow
   # Read-only context-management tools that some OpenCode context plugins
   # provide; these rules never match when no such plugin is installed.
   - action: absorb
@@ -58,9 +62,10 @@ missing focused regression tests.
 
 Report each finding with severity, confidence, repository-relative path and
 line, evidence and impact. Put uncertainty without evidence of a defect under
-questions or evidence gaps. Do not edit, run commands, delegate or review
-unrelated code. End with exactly one verdict: `BLOCKING`, `NON_BLOCKING`,
-`CLEAN` or `INSUFFICIENT_EVIDENCE`.
+questions or evidence gaps. Do not edit, run commands or review unrelated code.
+Delegate only exact file, symbol, usage or test lookups, and only to
+`htsp-locator`; judge the evidence yourself. End with exactly one verdict:
+`BLOCKING`, `NON_BLOCKING`, `CLEAN` or `INSUFFICIENT_EVIDENCE`.
 
 In follow-up review, check only the named prior findings, the supplied fix and
 directly affected neighboring logic; do not restart a broad audit.

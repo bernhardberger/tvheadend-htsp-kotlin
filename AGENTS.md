@@ -25,6 +25,8 @@ official Tvheadend software or as wholly original work.
 - Non-trivial changes to the protocol surface, public API/ABI, concurrency, or
   the release path deserve an independent review before they land. The
   optional `htsp-reviewer` agent in `.opencode/agents/` is one way to get it.
+  Agents delegate exact lookups only to `htsp-locator`, which pins its own
+  inexpensive model so lookups never inherit the caller's.
 
 ## Where to look
 
