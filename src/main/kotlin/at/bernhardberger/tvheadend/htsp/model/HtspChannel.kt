@@ -3,28 +3,28 @@ package at.bernhardberger.tvheadend.htsp.model
 import at.bernhardberger.tvheadend.htsp.wire.immutableSnapshot
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Complete channel snapshot from htsp_build_channel (pinned htsp_server.c:859–925). */
+/** Complete channel snapshot from htsp_build_channel (pinned htsp_server.c:857–923). */
 @ConsistentCopyVisibility
 public data class HtspChannel private constructor(
-    /** Unsigned channel identity (:873). */
+    /** Unsigned channel identity (:871). */
     public val channelId: Long,
-    /** UUID introduced in v41; required on the wire at v41+ (:874). */
+    /** UUID introduced in v41; required on the wire at v41+ (:872). */
     public val channelUuid: String?,
-    /** Major channel number, including zero (:876). */
+    /** Major channel number, including zero (:874). */
     public val channelNumber: Long,
-    /** Minor number, omitted when zero (:877–878). */
+    /** Minor number, omitted when zero (:875–876). */
     public val channelNumberMinor: Long?,
-    /** Display name, always emitted (:880). */
+    /** Display name, always emitted (:878). */
     public val channelName: String,
-    /** Icon URI when set (:881–882). */
+    /** Icon URI when set (:879–880). */
     public val channelIcon: String?,
-    /** Current event identity, zero when absent (:886). */
+    /** Current event identity, zero when absent (:884). */
     public val currentEventId: Long,
-    /** Next event identity, zero when absent (:887). */
+    /** Next event identity, zero when absent (:885). */
     public val nextEventId: Long,
-    /** Immutable service snapshot, including an empty list (:895–921). */
+    /** Immutable service snapshot, including an empty list (:893–919). */
     public val services: List<HtspChannelService>,
-    /** Immutable tag identities, including an empty list (:889–893,922). */
+    /** Immutable tag identities, including an empty list (:887–891,920). */
     public val tagIds: List<Long>,
     private val immutableSnapshot: Unit,
 ) {
@@ -74,21 +74,21 @@ public data class HtspChannel private constructor(
     override fun toString(): String = "HtspChannel(<redacted>)"
 }
 
-/** One channel service (pinned htsp_server.c:895–918). */
+/** One channel service (pinned htsp_server.c:893–916). */
 public data class HtspChannelService(
-    /** Service display name (:898). */
+    /** Service display name (:896). */
     public val name: String,
-    /** Service type label (:901). */
+    /** Service type label (:899). */
     public val type: String,
-    /** Unsigned content code (:904). */
+    /** Unsigned content code (:902). */
     public val content: Long,
-    /** Conditional-access identity when encrypted (:906–908). */
+    /** Conditional-access identity when encrypted (:904–906). */
     public val conditionalAccessId: Long?,
-    /** Conditional-access label when encrypted (:908). */
+    /** Conditional-access label when encrypted (:906). */
     public val conditionalAccessName: String?,
-    /** Provider name when set (:916). */
+    /** Provider name when set (:914). */
     public val providerName: String?,
-    /** Immutable HbbTV applications when set (:911–913). */
+    /** Immutable HbbTV applications when set (:909–911). */
     public val hbbtv: HtspHbbtvApplications? = null,
 ) {
     init {

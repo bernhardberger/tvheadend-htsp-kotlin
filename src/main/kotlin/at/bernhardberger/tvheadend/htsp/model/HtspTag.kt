@@ -3,22 +3,22 @@ package at.bernhardberger.tvheadend.htsp.model
 import at.bernhardberger.tvheadend.htsp.wire.immutableSnapshot
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full tag metadata (pinned htsp_server.c:932–958); membership has separate inclusion semantics. */
+/** Full tag metadata (pinned htsp_server.c:930–956); membership has separate inclusion semantics. */
 @ConsistentCopyVisibility
 public data class HtspTag private constructor(
-    /** Unsigned identity (:940). */
+    /** Unsigned identity (:938). */
     public val tagId: Long,
-    /** Display name, always emitted (:945). */
+    /** Display name, always emitted (:943). */
     public val tagName: String,
-    /** UUID introduced in v41; required on the wire at v41+ (:941). */
+    /** UUID introduced in v41; required on the wire at v41+ (:939). */
     public val tagUuid: String?,
-    /** Display order, always emitted (:943). */
+    /** Display order, always emitted (:941). */
     public val tagIndex: Long,
-    /** Icon URI when nonempty (:946–948). */
+    /** Icon URI when nonempty (:944–946). */
     public val tagIcon: String?,
-    /** Unsigned titled-icon flag, always emitted (:949). */
+    /** Unsigned titled-icon flag, always emitted (:947). */
     public val tagTitledIcon: Long,
-    /** Wire `members`: null means not included; empty means no members (:938,951–955,1709–1719). */
+    /** Wire `members`: null means not included; empty means no members (:936,949–953,1708–1718). */
     public val channelIds: List<Long>?,
     private val immutableSnapshot: Unit,
 ) {

@@ -48,15 +48,15 @@ public data class SubscribeRequest(
     public val channel: SubscribeChannel,
     public val profile: String? = null,
     public val weight: Long? = null,
-    /** HTSP `90khz`: 0/1 clock flag; null selects microseconds (pinned htsp_server.c:2658). */
+    /** HTSP `90khz`: 0/1 clock flag; null selects microseconds (pinned htsp_server.c:2657). */
     public val ninetyKhz: Boolean? = null,
     /**
      * HTSP `timeshiftPeriod`, seconds, 0 to 4294967295; `null` omits it and the server uses none.
      * The server applies it only when timeshift is enabled and caps it at its configured maximum
-     * unless that is unlimited (htsp_server.c:2663–2667).
+     * unless that is unlimited (htsp_server.c:2662–2666).
      */
     public val timeshiftPeriodSeconds: Long? = null,
-    /** HTSP `queueDepth`, payload bytes before frame dropping; null uses the server default (htsp_server.c:2676–2677,4191–4197). */
+    /** HTSP `queueDepth`, payload bytes before frame dropping; null uses the server default (htsp_server.c:2675–2676,4190–4196). */
     public val queueDepthBytes: Long? = null,
 ) : HtspRequest<SubscribeResponse>(
     method = "subscribe",
@@ -118,14 +118,14 @@ public sealed interface SubscriptionSeekPosition {
     /**
      * Media time position.
      *
-     * @property time HTSP `time`, signed ticks in the subscription's negotiated 90 kHz or microsecond clock (htsp_server.c:2827–2831)
+     * @property time HTSP `time`, signed ticks in the subscription's negotiated 90 kHz or microsecond clock (htsp_server.c:2826–2830)
      */
     public data class Time(public val time: Long) : SubscriptionSeekPosition
 
     /**
      * Byte position.
      *
-     * @property sizeBytes HTSP `size`, signed byte coordinate for seek or skip (htsp_server.c:2832–2836)
+     * @property sizeBytes HTSP `size`, signed byte coordinate for seek or skip (htsp_server.c:2831–2835)
      */
     public data class Size(public val sizeBytes: Long) : SubscriptionSeekPosition
 }
@@ -148,7 +148,7 @@ public enum class SubscriptionTimestampClock {
 public data class SubscriptionSeekRequest(
     public val subscriptionId: Long,
     public val position: SubscriptionSeekPosition,
-    /** HTSP `absolute`: 0/1 seek flag; null means relative (pinned htsp_server.c:2824-2834). */
+    /** HTSP `absolute`: 0/1 seek flag; null means relative (pinned htsp_server.c:2823-2833). */
     public val absolute: Boolean? = null,
 ) : HtspRequest<HtspEmptyResponse>(
     method = "subscriptionSeek",
@@ -169,7 +169,7 @@ public data class SubscriptionSeekRequest(
 public data class SubscriptionSkipRequest(
     public val subscriptionId: Long,
     public val position: SubscriptionSeekPosition,
-    /** HTSP `absolute`: 0/1 skip flag; null means relative (pinned htsp_server.c:2824-2834). */
+    /** HTSP `absolute`: 0/1 skip flag; null means relative (pinned htsp_server.c:2823-2833). */
     public val absolute: Boolean? = null,
 ) : HtspRequest<HtspEmptyResponse>(
     method = "subscriptionSkip",

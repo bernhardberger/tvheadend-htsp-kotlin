@@ -116,9 +116,9 @@ pins that physical bytes beyond a smaller declared root remain unread.
 ## Pinned source
 
 The fixtures were derived by hand from Tvheadend `src/htsmsg_binary.c` at
-revision `f082b430ae66f1761c2e82c34549b759c168f3c6`, Git blob
+revision `51ec612fa22c4c78b4697e4c262c943da9cbd6cc`, Git blob
 `48a1bf985ed554df473adb3a9251b479dfcdaf26`. The governing functions are
 `htsmsg_binary_deserialize`, `htsmsg_binary_des0`, `htsmsg_binary_count`,
 `htsmsg_binary_write`, and `htsmsg_binary_serialize`. The exact immutable
 source is at
-<https://github.com/tvheadend/tvheadend/blob/f082b430ae66f1761c2e82c34549b759c168f3c6/src/htsmsg_binary.c>.
+<https://github.com/tvheadend/tvheadend/blob/51ec612fa22c4c78b4697e4c262c943da9cbd6cc/src/htsmsg_binary.c>.

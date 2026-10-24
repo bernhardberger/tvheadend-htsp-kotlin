@@ -26,7 +26,7 @@ public data class HtspMuxPacketMessage(
     public val payload: HtspBinary,
     /**
      * HTSP `com`, decoded to a shared enum constant (src/streaming.h:59–63;
-     * src/htsp_server.c:4213–4214).
+     * src/htsp_server.c:4212–4213).
      */
     public val commercialAdvice: HtspCommercialAdvice? = null,
 ) : HtspServerMessage {
@@ -40,17 +40,17 @@ public data class HtspMuxPacketMessage(
 }
 
 /**
- * Mux frame classification (pinned src/htsp_server.c:4162–4166, 4209–4210).
+ * Mux frame classification (pinned src/htsp_server.c:4161–4165, 4208–4209).
  * Minor releases may add entries; keep an `else` branch when matching.
  */
 public enum class HtspFrameType {
-    /** Intra-coded frame, wire ASCII I (`73`); pinned src/htsp_server.c:4162–4166. */
+    /** Intra-coded frame, wire ASCII I (`73`); pinned src/htsp_server.c:4161–4165. */
     I,
-    /** Predictive frame, wire ASCII P (`80`); pinned src/htsp_server.c:4162–4166. */
+    /** Predictive frame, wire ASCII P (`80`); pinned src/htsp_server.c:4161–4165. */
     P,
-    /** Bidirectionally predictive frame, wire ASCII B (`66`); pinned src/htsp_server.c:4162–4166. */
+    /** Bidirectionally predictive frame, wire ASCII B (`66`); pinned src/htsp_server.c:4161–4165. */
     B,
-    /** Absent or wire `0` (pinned src/htsp_server.c:4162–4166, 4209–4210), or accepted signed `-1`. */
+    /** Absent or wire `0` (pinned src/htsp_server.c:4161–4165, 4208–4209), or accepted signed `-1`. */
     UNKNOWN,
 }
 
@@ -80,7 +80,7 @@ public data class HtspQueueStatusMessage(
     public val subscriptionId: Long,
     public val packetCount: Long,
     public val byteCount: Long,
-    /** HTSP `delay`, normalized microseconds; null means absent (htsp_server.c:4258–4279). */
+    /** HTSP `delay`, normalized microseconds; null means absent (htsp_server.c:4257–4278). */
     public val delayUs: Long?,
     public val bFrameDropCount: Long,
     public val pFrameDropCount: Long,
@@ -126,7 +126,7 @@ public data class HtspSubscriptionStream(
     public val ancillaryId: Long?,
     public val width: Long?,
     public val height: Long?,
-    /** HTSP `duration`, normalized microseconds; null means absent (htsp_server.c:4350–4351). */
+    /** HTSP `duration`, normalized microseconds; null means absent (htsp_server.c:4349–4350). */
     public val frameDurationUs: Long?,
     public val aspectNumerator: Long?,
     public val aspectDenominator: Long?,
@@ -134,7 +134,7 @@ public data class HtspSubscriptionStream(
     public val audioVersion: Long?,
     public val channelCount: Long?,
     public val sampleRate: Long?,
-    /** HTSP `rds_uecp`: optional 0/1 RDS UECP flag (pinned htsp_server.c:4367). */
+    /** HTSP `rds_uecp`: optional 0/1 RDS UECP flag (pinned htsp_server.c:4366). */
     public val rdsUecp: Boolean?,
 ) {
     init {
@@ -348,7 +348,7 @@ public data class HtspDescrambleInfoMessage(
     public val pid: Long,
     public val conditionalAccessId: Long,
     public val providerId: Long,
-    /** HTSP `ecmtime`, unsigned descrambler timing value; the pinned sender does not specify its unit (htsp_server.c:4559). */
+    /** HTSP `ecmtime`, unsigned descrambler timing value; the pinned sender does not specify its unit (htsp_server.c:4558). */
     public val ecmTime: Long,
     public val hopCount: Long,
     public val cardSystem: String? = null,
@@ -395,13 +395,13 @@ public data class HtspSubscriptionSpeedMessage(
  */
 public data class HtspTimeshiftStatusMessage(
     public val subscriptionId: Long,
-    /** HTSP `full`: 0/1 buffer-full flag (pinned htsp_server.c:4596). */
+    /** HTSP `full`: 0/1 buffer-full flag (pinned htsp_server.c:4595). */
     public val full: Boolean,
-    /** HTSP `shift`, signed ticks in this subscription's negotiated 90 kHz or microsecond clock (htsp_server.c:4597). */
+    /** HTSP `shift`, signed ticks in this subscription's negotiated 90 kHz or microsecond clock (htsp_server.c:4596). */
     public val shift: Long,
-    /** HTSP `start`, ticks in this subscription's negotiated clock; null means unavailable (htsp_server.c:4598–4599). */
+    /** HTSP `start`, ticks in this subscription's negotiated clock; null means unavailable (htsp_server.c:4597–4598). */
     public val start: Long?,
-    /** HTSP `end`, ticks in this subscription's negotiated clock; null means unavailable (htsp_server.c:4600–4601). */
+    /** HTSP `end`, ticks in this subscription's negotiated clock; null means unavailable (htsp_server.c:4599–4600). */
     public val end: Long?,
     public val speed: Int? = null,
 ) : HtspServerMessage {
@@ -420,11 +420,11 @@ public data class HtspTimeshiftStatusMessage(
  */
 public data class HtspSubscriptionSkipMessage(
     public val subscriptionId: Long,
-    /** HTSP `absolute`: optional 0/1 absolute-position flag (pinned htsp_server.c:4625-4626). */
+    /** HTSP `absolute`: optional 0/1 absolute-position flag (pinned htsp_server.c:4624-4625). */
     public val absolute: Boolean?,
-    /** HTSP `error`: optional 0/1 skip-failed flag, not an error code (pinned htsp_server.c:4627-4628). */
+    /** HTSP `error`: optional 0/1 skip-failed flag, not an error code (pinned htsp_server.c:4626-4627). */
     public val error: Boolean?,
-    /** HTSP `time`, ticks in this subscription's negotiated 90 kHz or microsecond clock; null means absent (htsp_server.c:4630). */
+    /** HTSP `time`, ticks in this subscription's negotiated 90 kHz or microsecond clock; null means absent (htsp_server.c:4629). */
     public val time: Long?,
     public val sizeBytes: Long?,
 ) : HtspServerMessage {

@@ -3,108 +3,108 @@ package at.bernhardberger.tvheadend.htsp.model
 import at.bernhardberger.tvheadend.htsp.wire.immutableSnapshot
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full recording snapshot (pinned htsp_server.c:965–1202); null properties are not set. */
+/** Full recording snapshot (pinned htsp_server.c:963–1200); null properties are not set. */
 @ConsistentCopyVisibility
 public data class HtspDvrEntry private constructor(
-    /** Unsigned recording identity (:977). */
+    /** Unsigned recording identity (:975). */
     public val entryId: Long,
-    /** UUID introduced in v41; required on the wire at v41+ (:978). */
+    /** UUID introduced in v41; required on the wire at v41+ (:976). */
     public val entryUuid: String?,
-    /** Always-emitted enable flag (:981). */
+    /** Always-emitted enable flag (:979). */
     public val enabled: Boolean,
-    /** Linked channel, absent after channel deletion (:982–983). */
+    /** Linked channel, absent after channel deletion (:980–981). */
     public val channelId: Long?,
-    /** Saved channel name, when available (:984–985). */
+    /** Saved channel name, when available (:982–983). */
     public val channelName: String?,
-    /** Linked broadcast identity (:987–988). */
+    /** Linked broadcast identity (:985–986). */
     public val eventId: Long?,
-    /** Linked automatic rule UUID (:990–991). */
+    /** Linked automatic rule UUID (:988–989). */
     public val autorecEntryUuid: String?,
-    /** Linked time rule UUID (:993–994). */
+    /** Linked time rule UUID (:991–992). */
     public val timerecEntryUuid: String?,
-    /** Scheduled start in epoch seconds (:996). */
+    /** Scheduled start in epoch seconds (:994). */
     public val startEpochSeconds: Long,
-    /** Scheduled stop in epoch seconds (:997). */
+    /** Scheduled stop in epoch seconds (:995). */
     public val stopEpochSeconds: Long,
-    /** Pre-recording padding in minutes (:998). */
+    /** Pre-recording padding in minutes (:996). */
     public val startExtraMinutes: Long,
-    /** Post-recording padding in minutes (:999). */
+    /** Post-recording padding in minutes (:997). */
     public val stopExtraMinutes: Long,
-    /** Retention days or policy sentinel (:1001–1005). */
+    /** Retention days or policy sentinel (:999–1003). */
     public val retentionDays: Long,
-    /** Removal days or policy sentinel (:1007). */
+    /** Removal days or policy sentinel (:1005). */
     public val removalDays: Long,
-    /** Effective priority (:1008–1013). */
+    /** Effective priority (:1006–1011). */
     public val priority: Long,
-    /** Content code, including zero (:1014). */
+    /** Content code, including zero (:1012). */
     public val contentType: Long,
-    /** Age rating (:1015); null only on v36 sessions where the server omits it. Required from v37. */
+    /** Age rating (:1013); null only on v36 sessions where the server omits it. Required from v37. */
     public val ageRating: Long?,
-    /** Parental display label when enabled and set (:1017–1074). */
+    /** Parental display label when enabled and set (:1015–1072). */
     public val ratingLabel: String?,
-    /** Parental icon when enabled and set (:1017–1074). */
+    /** Parental icon when enabled and set (:1015–1072). */
     public val ratingIcon: String?,
-    /** Rating authority when enabled and set (:1017–1074). */
+    /** Rating authority when enabled and set (:1015–1072). */
     public val ratingAuthority: String?,
-    /** Rating country when enabled and set (:1017–1074). */
+    /** Rating country when enabled and set (:1015–1072). */
     public val ratingCountry: String?,
-    /** Play count, only for recording or completed entries (:1076–1079). */
+    /** Play count, only for recording or completed entries (:1074–1077). */
     public val playCount: Long?,
-    /** Playback position in seconds, only for recording or completed entries (:1076–1079). */
+    /** Playback position in seconds, only for recording or completed entries (:1074–1077). */
     public val playPositionSeconds: Long?,
-    /** Season ordinal when set (:714–730,1105). */
+    /** Season ordinal when set (:712–728,1103). */
     public val seasonNumber: Long?,
-    /** Season total when set (:714–730,1105). */
+    /** Season total when set (:712–728,1103). */
     public val seasonCount: Long?,
-    /** Episode ordinal when set (:714–730,1105). */
+    /** Episode ordinal when set (:712–728,1103). */
     public val episodeNumber: Long?,
-    /** Episode total when set (:714–730,1105). */
+    /** Episode total when set (:712–728,1103). */
     public val episodeCount: Long?,
-    /** Part ordinal when set (:714–730,1105). */
+    /** Part ordinal when set (:712–728,1103). */
     public val partNumber: Long?,
-    /** Part total when set (:714–730,1105). */
+    /** Part total when set (:712–728,1103). */
     public val partCount: Long?,
-    /** Episode display text, wire `episode` (:730,1105). */
+    /** Episode display text, wire `episode` (:728,1103). */
     public val episodeOnscreen: String?,
-    /** Localized title when set (:1081–1082). */
+    /** Localized title when set (:1079–1080). */
     public val title: String?,
-    /** Localized description when set (:1097–1103). */
+    /** Localized description when set (:1095–1101). */
     public val description: String?,
-    /** Localized summary when set (:1097–1103). */
+    /** Localized summary when set (:1095–1101). */
     public val summary: String?,
-    /** Localized subtitle when set (:1097–1103). */
+    /** Localized subtitle when set (:1095–1101). */
     public val subtitle: String?,
-    /** Owner when set (:1106). */
+    /** Owner when set (:1104). */
     public val owner: String?,
-    /** Creator when set (:1107). */
+    /** Creator when set (:1105). */
     public val creator: String?,
-    /** Comment when set (:1108). */
+    /** Comment when set (:1106). */
     public val comment: String?,
-    /** Image URI when nonempty (:1113–1115). */
+    /** Image URI when nonempty (:1111–1113). */
     public val image: String?,
-    /** Fanart URI when nonempty (:1117–1119). */
+    /** Fanart URI when nonempty (:1115–1117). */
     public val fanartImage: String?,
-    /** Copyright year when nonzero (:1120–1121). */
+    /** Copyright year when nonzero (:1118–1119). */
     public val copyrightYear: Long?,
-    /** Immutable file snapshot when files and a configuration exist (:1124–1147). */
+    /** Immutable file snapshot when files and a configuration exist (:1122–1145). */
     public val files: List<HtspDvrRecordingFile>?,
-    /** Last file's relative path when available (:1149–1151). */
+    /** Last file's relative path when available (:1147–1149). */
     public val path: String?,
-    /** Recording configuration UUID, wire `configId`, when linked (:1153–1154). */
+    /** Recording configuration UUID, wire `configId`, when linked (:1151–1152). */
     public val dvrConfigUuid: String?,
-    /** Duplicate flag, only for upcoming entries (:1187–1188). */
+    /** Duplicate flag, only for upcoming entries (:1185–1186). */
     public val duplicate: Boolean?,
-    /** Always-emitted recording state (:1157–1190). */
+    /** Always-emitted recording state (:1155–1188). */
     public val state: String,
-    /** Recording error when present (:1191–1192). */
+    /** Recording error when present (:1189–1190). */
     public val error: String?,
-    /** Subscription error when present (:1193–1194). */
+    /** Subscription error when present (:1191–1192). */
     public val subscriptionError: String?,
-    /** Nonzero stream-error count (:1195–1196). */
+    /** Nonzero stream-error count (:1193–1194). */
     public val streamErrors: Long?,
-    /** Nonzero data-error count (:1197–1198). */
+    /** Nonzero data-error count (:1195–1196). */
     public val dataErrors: Long?,
-    /** Known file size for recording or completed entries (:1163,1173,1199–1200). */
+    /** Known file size for recording or completed entries (:1161,1171,1197–1198). */
     public val dataSizeBytes: Long?,
     private val immutableSnapshot: Unit,
 ) {

@@ -9,7 +9,7 @@ import java.util.Collections
  * Immutable ordered programme credits for event and EPG replies.
  * A person credited in several roles appears once per role, in wire order.
  * Produced by src/epggrab/module/xmltv.c:726–740, sent as `credits` by
- * src/htsp_server.c:1373–1374 and `cred` by src/epg.c:1766–1768.
+ * src/htsp_server.c:1371–1372 and `cred` by src/epg.c:1796–1798.
  */
 public class HtspProgrammeCredits(entries: List<HtspProgrammeCredit>) {
     /** Ordered snapshot; repeated names and unknown roles are representable. */
@@ -20,7 +20,7 @@ public class HtspProgrammeCredits(entries: List<HtspProgrammeCredit>) {
     override fun toString(): String = "HtspProgrammeCredits(<redacted>)"
 }
 
-/** One programme credit from pinned htsp_server.c:1373–1374; a person can have several roles. */
+/** One programme credit from pinned htsp_server.c:1371–1372; a person can have several roles. */
 public data class HtspProgrammeCredit(
     /** Person name, the key of the wire credits map. */
     public val name: String,
@@ -42,7 +42,7 @@ public data class HtspHbbtvTitle(
 
 /**
  * Application metadata published to channel-service consumers (src/input/mpegts/dvb_psi_hbbtv.c:139–150).
- * Sent as service `hbbtv` by pinned htsp_server.c:911–913.
+ * Sent as service `hbbtv` by pinned htsp_server.c:909–911.
  * Legacy service configuration may omit fields; absent or invalid scalars decode as null
  * and unusable titles are skipped (src/service.c:1788–1794).
  */

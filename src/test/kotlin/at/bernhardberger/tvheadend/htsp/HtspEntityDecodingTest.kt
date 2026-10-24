@@ -40,7 +40,7 @@ class HtspEntityDecodingTest {
 
     @Test
     fun dvrStatsOnlyCarriesTheFieldsOutsideTheStatsonlyGate() {
-        // htsp_server.c:977–980,1157–1201: every non-identity field here is outside !statsonly.
+        // htsp_server.c:975–978,1155–1199: every non-identity field here is outside !statsonly.
         val fields = mapOf("method" to "dvrEntryUpdate", "id" to 1L, "idStr" to "uuid", "state" to "recording")
         assertEquals(HtspDvrEntryStatsMessage(1L, "uuid", "recording"), decoded(fields))
         assertEquals(

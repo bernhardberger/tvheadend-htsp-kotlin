@@ -34,7 +34,7 @@ public data class HtspDvrRecordingStream(
     override fun toString(): String = "HtspDvrRecordingStream(<redacted>)"
 }
 
-/** Immutable recording-stream list (pinned htsp_server.c:1133–1135). */
+/** Immutable recording-stream list (pinned htsp_server.c:1131–1133). */
 public class HtspDvrRecordingInfo(streams: List<HtspDvrRecordingStream>) {
     /** Ordered snapshot from wire `info`. */
     public val streams: List<HtspDvrRecordingStream> = streams.immutableSnapshot()
@@ -43,18 +43,18 @@ public class HtspDvrRecordingInfo(streams: List<HtspDvrRecordingStream>) {
     override fun toString(): String = "HtspDvrRecordingInfo(<redacted>)"
 }
 
-/** One recording-file entry copied from persisted logs (pinned htsp_server.c:1124–1147). */
+/** One recording-file entry copied from persisted logs (pinned htsp_server.c:1122–1145). */
 @ConsistentCopyVisibility
 public data class HtspDvrRecordingFile private constructor(
-    /** Relative filename (:1129–1132). */
+    /** Relative filename (:1127–1130). */
     public val path: String?,
-    /** Start epoch seconds when available (:1136–1137). */
+    /** Start epoch seconds when available (:1134–1135). */
     public val startEpochSeconds: Long?,
-    /** Stop epoch seconds when available (:1138–1139). */
+    /** Stop epoch seconds when available (:1136–1137). */
     public val stopEpochSeconds: Long?,
-    /** Byte size when available (:1140–1141). */
+    /** Byte size when available (:1138–1139). */
     public val sizeBytes: Long?,
-    /** Stream metadata when available (:1133–1135). */
+    /** Stream metadata when available (:1131–1133). */
     public val info: HtspDvrRecordingInfo? = null,
     private val evolution: Unit,
 ) {

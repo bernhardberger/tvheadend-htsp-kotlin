@@ -4,19 +4,19 @@ import at.bernhardberger.tvheadend.htsp.model.HtspChannel
 import at.bernhardberger.tvheadend.htsp.model.HtspTag
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Adds a complete channel snapshot (pinned htsp_server.c:859–925). */
+/** Adds a complete channel snapshot (pinned htsp_server.c:857–923). */
 public data class HtspChannelAddMessage(
     /** Full channel value. */
     public val channel: HtspChannel,
 ) : HtspMetadataMessage
 
-/** Inserts or replaces a channel with the full snapshot (pinned htsp_server.c:859–925). */
+/** Inserts or replaces a channel with the full snapshot (pinned htsp_server.c:857–923). */
 public data class HtspChannelUpdateMessage(
     /** Full replacement, including cleared nullable properties. */
     public val channel: HtspChannel,
 ) : HtspMetadataMessage
 
-/** Updates only the current and next event references (pinned htsp_server.c:3805–3823). */
+/** Updates only the current and next event references (pinned htsp_server.c:3804–3822). */
 public data class HtspChannelNowNextMessage(
     /** Unsigned channel identity. */
     public val channelId: Long,
@@ -39,15 +39,15 @@ public data class HtspChannelDeleteMessage(public val channelId: Long) : HtspMet
     override fun toString(): String = "HtspChannelDeleteMessage(<redacted>)"
 }
 
-/** Adds tag metadata (pinned htsp_server.c:932–958). */
+/** Adds tag metadata (pinned htsp_server.c:930–956). */
 public data class HtspTagAddMessage(
     /** Full metadata; null membership means not included. */
     public val tag: HtspTag,
 ) : HtspMetadataMessage
 
 /**
- * Inserts or replaces tag metadata (pinned htsp_server.c:932–958).
- * Tags created after initial sync arrive only as this message (:3855–3869).
+ * Inserts or replaces tag metadata (pinned htsp_server.c:930–956).
+ * Tags created after initial sync arrive only as this message (:3854–3868).
  */
 public data class HtspTagUpdateMessage(
     /** Full metadata; retain previous membership only when membership is null. */

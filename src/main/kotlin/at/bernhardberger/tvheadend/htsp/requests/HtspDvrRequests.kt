@@ -15,9 +15,9 @@ public data class HtspDvrConfig(
 )
 /** One DVR cutpoint from [startMs] through [endMs] with its unsigned action [type]. */
 public data class HtspDvrCutpoint(
-    /** HTSP `start`, milliseconds (pinned htsp_server.c:2562, `dc_start_ms`). */
+    /** HTSP `start`, milliseconds (pinned htsp_server.c:2561, `dc_start_ms`). */
     public val startMs: Long,
-    /** HTSP `end`, milliseconds (pinned htsp_server.c:2563, `dc_end_ms`). */
+    /** HTSP `end`, milliseconds (pinned htsp_server.c:2562, `dc_end_ms`). */
     public val endMs: Long,
     public val type: Long,
 )
@@ -128,9 +128,9 @@ public sealed interface AddDvrEntrySelector {
      */
     public data class ExplicitChannelTime(
         public val channelId: Long,
-        /** HTSP `start`, epoch seconds (pinned htsp_server.c:2085–2095). */
+        /** HTSP `start`, epoch seconds (pinned htsp_server.c:2084–2094). */
         public val startEpochSeconds: Long,
-        /** HTSP `stop`, epoch seconds (pinned htsp_server.c:2085–2095). */
+        /** HTSP `stop`, epoch seconds (pinned htsp_server.c:2084–2094). */
         public val stopEpochSeconds: Long,
     ) : AddDvrEntrySelector {
         init {
@@ -142,8 +142,8 @@ public sealed interface AddDvrEntrySelector {
 /**
  * Requests DVR scheduling from exactly one [selector]. Explicit channel/time adds require a
  * non-empty [title] (whitespace is accepted). For event-based adds the server ignores [title], [subtitle], [summary],
- * [description], and [ageRating] (pinned src/htsp_server.c:2082–2111).
- * Creation policy options are copied by src/htsp_server.c:2057–2070.
+ * [description], and [ageRating] (pinned src/htsp_server.c:2081–2110).
+ * Creation policy options are copied by src/htsp_server.c:2056–2069.
  * Older servers that predate a creation option silently ignore it and may still answer Ok.
  * These options add no minimumProtocolVersion gate because their introduction versions are unknown.
  *
@@ -227,21 +227,21 @@ public data class UpdateDvrEntryRequest(
     public val language: String? = null,
     public val comment: String? = null,
     public val playCount: Long? = null,
-    /** HTSP `playposition`, whole playback seconds; null omits it (htsp_server.c:2235). */
+    /** HTSP `playposition`, whole playback seconds; null omits it (htsp_server.c:2234). */
     public val playPositionSeconds: Long? = null,
-    /** HTSP `enabled`: nullable 0/1 enablement flag (pinned htsp_server.c:2196); null omits it. */
+    /** HTSP `enabled`: nullable 0/1 enablement flag (pinned htsp_server.c:2195); null omits it. */
     public val enabled: Boolean? = null,
-    /** HTSP `start`, epoch seconds; null omits it (htsp_server.c:2198). */
+    /** HTSP `start`, epoch seconds; null omits it (htsp_server.c:2197). */
     public val startEpochSeconds: Long? = null,
-    /** HTSP `stop`, epoch seconds; null omits it (htsp_server.c:2199). */
+    /** HTSP `stop`, epoch seconds; null omits it (htsp_server.c:2198). */
     public val stopEpochSeconds: Long? = null,
-    /** HTSP `startExtra`, padding minutes; null omits it (htsp_server.c:998,2200). */
+    /** HTSP `startExtra`, padding minutes; null omits it (htsp_server.c:996,2199). */
     public val startExtraMinutes: Long? = null,
-    /** HTSP `stopExtra`, padding minutes; null omits it (htsp_server.c:999,2201). */
+    /** HTSP `stopExtra`, padding minutes; null omits it (htsp_server.c:997,2200). */
     public val stopExtraMinutes: Long? = null,
-    /** HTSP `retention`, days or server DVR retention-policy sentinel; null omits it (htsp_server.c:1002–1005,2202). */
+    /** HTSP `retention`, days or server DVR retention-policy sentinel; null omits it (htsp_server.c:1000–1003,2201). */
     public val retentionDays: Long? = null,
-    /** HTSP `removal`, days or server DVR removal-policy sentinel; null omits it (htsp_server.c:1007,2203). */
+    /** HTSP `removal`, days or server DVR removal-policy sentinel; null omits it (htsp_server.c:1005,2202). */
     public val removalDays: Long? = null,
     public val priority: Long? = null,
     public val ageRating: Long? = null,

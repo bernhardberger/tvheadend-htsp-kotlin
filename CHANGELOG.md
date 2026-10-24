@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+- The protocol notes and source citations now pin Tvheadend master
+  `51ec612fa22c4c78b4697e4c262c943da9cbd6cc`, still HTSP v44. The upstream changes
+  since `f082b430` do not change anything the client sends or decodes, so only the
+  cited line numbers moved.
+
 ## [1.0.0-beta.4] - 2026-10-16
 
 Fourth pre-release of the 1.0 line. It lets the initial metadata sync finish on

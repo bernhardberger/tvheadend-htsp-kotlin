@@ -2,40 +2,40 @@ package at.bernhardberger.tvheadend.htsp.model
 
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full time recording rule (pinned htsp_server.c:1275–1311). */
+/** Full time recording rule (pinned htsp_server.c:1273–1309). */
 @ConsistentCopyVisibility
 public data class HtspTimerecEntry private constructor(
-    /** Rule UUID (:1280). */
+    /** Rule UUID (:1278). */
     public val id: String,
-    /** Enabled flag (:1281). */
+    /** Enabled flag (:1279). */
     public val enabled: Boolean,
-    /** Optional name (:1298–1299). */
+    /** Optional name (:1296–1297). */
     public val name: String? = null,
-    /** Optional title (:1296–1297). */
+    /** Optional title (:1294–1295). */
     public val title: String? = null,
-    /** Optional channel (:1304–1305). */
+    /** Optional channel (:1302–1303). */
     public val channelId: Long? = null,
-    /** Start time; wire -1 becomes null, otherwise 0..1439 (:1292). */
+    /** Start time; wire -1 becomes null, otherwise 0..1439 (:1290). */
     public val startMinutesSinceMidnight: Int?,
-    /** Stop time; wire -1 becomes null, otherwise 0..1439 (:1293). */
+    /** Stop time; wire -1 becomes null, otherwise 0..1439 (:1291). */
     public val stopMinutesSinceMidnight: Int?,
-    /** Always-emitted weekday bitmask (:1282). */
+    /** Always-emitted weekday bitmask (:1280). */
     public val daysOfWeekMask: Long,
-    /** Always-emitted priority (:1291). */
+    /** Always-emitted priority (:1289). */
     public val priority: Long,
-    /** Always-emitted retention days or policy sentinel (:1284–1288). */
+    /** Always-emitted retention days or policy sentinel (:1282–1286). */
     public val retentionDays: Long,
-    /** Always-emitted removal days or policy sentinel (:1290). */
+    /** Always-emitted removal days or policy sentinel (:1288). */
     public val removalDays: Long,
-    /** Optional directory (:1300–1301). */
+    /** Optional directory (:1298–1299). */
     public val directory: String? = null,
-    /** Optional owner (:1302). */
+    /** Optional owner (:1300). */
     public val owner: String? = null,
-    /** Optional creator (:1303). */
+    /** Optional creator (:1301). */
     public val creator: String? = null,
-    /** Optional configuration UUID, wire `configId`, introduced in v40 (:1306–1307). */
+    /** Optional configuration UUID, wire `configId`, introduced in v40 (:1304–1305). */
     public val dvrConfigUuid: String? = null,
-    /** Optional comment, introduced in v42 (:1294). */
+    /** Optional comment, introduced in v42 (:1292). */
     public val comment: String? = null,
     private val immutableSnapshot: Unit,
 ) {

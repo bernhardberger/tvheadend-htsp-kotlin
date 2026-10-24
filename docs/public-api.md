@@ -389,9 +389,9 @@ negotiated timestamp clock or permit a second collection/subscribe for that id.
 This follows the pinned upstream's `service_restart_streams` in `src/service.c`
 (lines 1050-1073): a composition change emits `SMT_STOP` with
 `SM_CODE_SOURCE_RECONFIGURED`, followed by `SMT_START`. In `src/htsp_server.c`,
-lines 4656-4663 forward these through the same subscription; lines 4401-4423
+lines 4655-4662 forward these through the same subscription; lines 4400-4422
 serialize the same id without destroying it. Unsubscribe separately acknowledges
-then destroys the subscription (lines 2751-2773). See the
+then destroys the subscription (lines 2750-2772). See the
 [upstream pin](htsp-protocol/upstream.json).
 
 Consumers must handle repeated `Started` and reconfigure their decoding pipeline.
@@ -423,9 +423,9 @@ constructors and their `HtspConnection` extensions require a non-null
 `HtspRecordingRuleChannel`: pass the current `Id` to retain the restriction, or
 explicit `Any` to clear it. `Any` omits wire `channelId`; a concrete `Id` sends it.
 The pinned handlers start with a null channel and resolve a supplied non-negative
-`channelId` (`src/htsp_server.c:2360–2383,2471–2494`); the shared converter always
+`channelId` (`src/htsp_server.c:2359–2382,2470–2493`); the shared converter always
 writes the resolved channel UUID or an empty restriction on updates
-(`src/htsp_server.c:700–703`). There is no wire-level "unchanged" channel option.
+(`src/htsp_server.c:698–701`). There is no wire-level "unchanged" channel option.
 
 Each subscription id may also be sent in only one `subscribe` request per
 connection generation; local reuse throws `IllegalStateException` without
@@ -486,7 +486,7 @@ properties into the old entity with `copy()`: that retains server-side clears.
 The sole inclusion exception is `HtspTag.channelIds` (wire `members`): null means
 "not included in this message", while an empty list means no members. Initial
 sync sends `tagAdd` without members and then `tagUpdate` with members. Tags created
-after initial sync arrive only as `tagUpdate`: pinned `src/htsp_server.c:3855–3869`
+after initial sync arrive only as `tagUpdate`: pinned `src/htsp_server.c:3854–3868`
 routes `htsp_tag_add` through `htsp_tag_update_msg` to
 `htsp_build_tag(..., "tagUpdate", 1)`. Consumers must accept these as inserts.
 

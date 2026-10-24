@@ -128,7 +128,7 @@ public data class HtspEpgBroadcastObject(
     public val aspectRatio: Long?,
     public val starRating: Long?,
     public val ageRating: Long?,
-    /** Rating-label UUID, HTSP `ratlab` (src/epg.c:1740–1742). */
+    /** Rating-label UUID, HTSP `ratlab` (src/epg.c:1770–1772). */
     public val ratingLabel: String?,
     public val image: String?,
     public val titles: Map<String, String>?,
@@ -144,7 +144,7 @@ public data class HtspEpgBroadcastObject(
     public val keywords: List<String>?,
     public val seriesLinkUri: String?,
     public val episodeLinkUri: String?,
-    /** Programme credits, HTSP `cred` (src/epg.c:1766–1768). */
+    /** Programme credits, HTSP `cred` (src/epg.c:1796–1798). */
     public val credits: HtspProgrammeCredits? = null,
 )
 
@@ -188,7 +188,7 @@ public data class GetEventsRequest(
     public val eventId: Long? = null,
     public val language: String? = null,
     public val numFollowing: Long? = null,
-    /** HTSP `maxTime`, latest broadcast-start epoch seconds; zero is unlimited, null omits it (htsp_server.c:1813–1828). */
+    /** HTSP `maxTime`, latest broadcast-start epoch seconds; zero is unlimited, null omits it (htsp_server.c:1812–1827). */
     public val maxTimeEpochSeconds: Long? = null,
 ) : HtspRequest<GetEventsResponse>(
     method = "getEvents",
@@ -227,7 +227,7 @@ public data class EpgQueryRequest(
     public val language: String? = null,
     public val fullText: Boolean? = null,
     public val mergeText: Boolean? = null,
-    /** HTSP `full`: 0/1 full-event response flag; null omits it (pinned htsp_server.c:1915). */
+    /** HTSP `full`: 0/1 full-event response flag; null omits it (pinned htsp_server.c:1914). */
     public val full: Boolean? = null,
     public val minDurationSeconds: Long? = null,
     public val maxDurationSeconds: Long? = null,

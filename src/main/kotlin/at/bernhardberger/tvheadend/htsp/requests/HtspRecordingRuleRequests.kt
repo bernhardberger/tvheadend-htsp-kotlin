@@ -77,9 +77,9 @@ public data class AddAutorecEntryRequest(
     public val channel: HtspRecordingRuleChannel? = null,
     public val minDurationSeconds: Long? = null,
     public val maxDurationSeconds: Long? = null,
-    /** HTSP `fulltext`: 0/1 search flag; null omits it (pinned htsp_server.c:608-609). */
+    /** HTSP `fulltext`: 0/1 search flag; null omits it (pinned htsp_server.c:606-607). */
     public val fullText: Boolean? = null,
-    /** HTSP `mergetext`: 0/1 merge flag; null omits it (pinned htsp_server.c:610-611). */
+    /** HTSP `mergetext`: 0/1 merge flag; null omits it (pinned htsp_server.c:608-609). */
     public val mergeText: Boolean? = null,
     public val duplicateDetection: Long? = null,
     public val maximumRecordingCount: Long? = null,
@@ -124,9 +124,9 @@ public data class AddAutorecEntryRequest(
 /**
  * Identifies an automatic recording rule and carries optional matching and policy changes.
  * Updates always set the channel restriction: supply the current [channel] to retain it, or
- * [HtspRecordingRuleChannel.Any] to clear it by omitting wire `channelId` (src/htsp_server.c:700–703).
+ * [HtspRecordingRuleChannel.Any] to clear it by omitting wire `channelId` (src/htsp_server.c:698–701).
  * No wire shape keeps the stored channel: despite the "keep old one" comment at
- * src/htsp_server.c:2371, an update without `channelId` clears it. Callers that don't know the
+ * src/htsp_server.c:2370, an update without `channelId` clears it. Callers that don't know the
  * current channel cannot update the rule without changing it.
  *
  * @property id UUID of the rule to update (`id`)
@@ -156,9 +156,9 @@ public data class UpdateAutorecEntryRequest(
     public val channel: HtspRecordingRuleChannel,
     public val minDurationSeconds: Long? = null,
     public val maxDurationSeconds: Long? = null,
-    /** HTSP `fulltext`: 0/1 search flag; null omits it (pinned htsp_server.c:608-609). */
+    /** HTSP `fulltext`: 0/1 search flag; null omits it (pinned htsp_server.c:606-607). */
     public val fullText: Boolean? = null,
-    /** HTSP `mergetext`: 0/1 merge flag; null omits it (pinned htsp_server.c:610-611). */
+    /** HTSP `mergetext`: 0/1 merge flag; null omits it (pinned htsp_server.c:608-609). */
     public val mergeText: Boolean? = null,
     public val duplicateDetection: Long? = null,
     public val maximumRecordingCount: Long? = null,
@@ -256,9 +256,9 @@ public data class AddTimerecEntryRequest(
 /**
  * Identifies a time-based recording rule and carries optional interval and policy changes.
  * Updates always set the channel restriction: supply the current [channel] to retain it, or
- * [HtspRecordingRuleChannel.Any] to clear it by omitting wire `channelId` (src/htsp_server.c:700–703).
+ * [HtspRecordingRuleChannel.Any] to clear it by omitting wire `channelId` (src/htsp_server.c:698–701).
  * No wire shape keeps the stored channel: despite the "keep old one" comment at
- * src/htsp_server.c:2482, an update without `channelId` clears it. Callers that don't know the
+ * src/htsp_server.c:2481, an update without `channelId` clears it. Callers that don't know the
  * current channel cannot update the rule without changing it.
  *
  * @property id UUID of the rule to update (`id`)
