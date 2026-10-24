@@ -47,7 +47,7 @@ dokka {
 }
 
 group = "at.bernhardberger.tvheadend"
-version = "1.0.0-beta.4"
+version = "1.0.0-rc.1"
 
 val releaseVersion = version.toString().removeSuffix("-SNAPSHOT")
 val allowedPublicationVersions = setOf(

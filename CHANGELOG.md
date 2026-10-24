@@ -1,6 +1,15 @@
 # Changelog
 
-## [Unreleased]
+## [1.0.0-rc.1] - 2026-10-24
+
+First release candidate of the 1.0 line. It settles the last public API names
+and compatibility promises found by an API freeze review, and re-pins the
+protocol notes to current Tvheadend master. The API is meant to stay as it is
+for `1.0.0` unless testing finds a defect, but like every pre-release it makes no
+compatibility promise toward later pre-releases or `1.0.0`; see
+[`docs/versioning.md`](https://github.com/bernhardberger/tvheadend-htsp-kotlin/blob/v1.0.0-rc.1/docs/versioning.md).
+Upgrading from `1.0.0-beta.4` can need source changes: read the **BREAKING**
+entries below.
 
 - **BREAKING:** three properties are renamed so their names say what the server
   sends. `HtspEpgBroadcastObject.eventId` is now `dvbEventId`, because it holds
