@@ -50,7 +50,11 @@ incompatible change requires a new major version.
   including overloads that a later release keeps only for binary compatibility.
 - Kotlin source compatibility of that API, except inferred callable references
   such as `::HtspChannelAddMessage` or `message::copy`, whose arity changes when
-  a parameter is added.
+  a parameter is added. For optional parameters of the request convenience
+  functions, source compatibility covers named arguments only: a minor release
+  adds new request parameters before `timeoutMs` and `expectedGeneration`, so
+  pass every optional parameter by name, including `timeoutMs`,
+  `expectedGeneration` and any parameter after them, such as `idleTimeoutMs`.
 - The behavior documented in [`public-api.md`](public-api.md), KDoc, and the
   protocol notes: typed outcomes, cancellation, stream ordering and buffering
   contracts, and redaction of secrets, paths and identifiers in `toString`.

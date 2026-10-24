@@ -22,7 +22,11 @@ public sealed interface HtspGenerationTermination {
     public data object Disconnected : HtspGenerationTermination
 }
 
-/** Connection lifecycle state exposed as finite typed snapshots. */
+/**
+ * Connection lifecycle state exposed as finite typed snapshots.
+ *
+ * Closed for the 1.x line; safe to match exhaustively.
+ */
 public sealed class HtspConnectionState {
     /** No transport is currently connected or connecting. */
     public data object Disconnected : HtspConnectionState()

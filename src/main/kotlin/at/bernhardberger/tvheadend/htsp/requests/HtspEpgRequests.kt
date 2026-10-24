@@ -77,7 +77,7 @@ public data class HtspEpgEpisodeNumber(
  * @property id broadcast identifier (`id`), the value [GetEventRequest.eventId] selects
  * @property grabber identifier of the EPG grabber module that supplied the record (`gr`)
  * @property channelUuid UUID of the broadcast's channel (`ch`)
- * @property eventId DVB event identifier (`eid`)
+ * @property dvbEventId DVB event identifier (`eid`), not the broadcast [id] that [GetEventRequest.eventId] selects
  * @property externalEventId XMLTV event identifier (`xeid`)
  * @property widescreen whether the broadcast is flagged widescreen (`is_wd`)
  * @property highDefinition whether the broadcast is flagged high definition (`is_hd`)
@@ -114,7 +114,7 @@ public data class HtspEpgBroadcastObject(
     public val stopEpochSeconds: Long,
     public val grabber: String?,
     public val channelUuid: String?,
-    public val eventId: Long?,
+    public val dvbEventId: Long?,
     public val externalEventId: String?,
     public val widescreen: Boolean,
     public val highDefinition: Boolean,
@@ -128,8 +128,8 @@ public data class HtspEpgBroadcastObject(
     public val aspectRatio: Long?,
     public val starRating: Long?,
     public val ageRating: Long?,
-    /** Rating-label UUID, HTSP `ratlab` (src/epg.c:1770–1772). */
-    public val ratingLabel: String?,
+    /** Rating-label UUID, HTSP `ratlab` (src/epg.c:1770–1772), not display text. */
+    public val ratingLabelUuid: String?,
     public val image: String?,
     public val titles: Map<String, String>?,
     public val subtitles: Map<String, String>?,

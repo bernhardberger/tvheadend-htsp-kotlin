@@ -1212,7 +1212,7 @@ public final class at/bernhardberger/tvheadend/htsp/messages/HtspSubscriptionStr
 	public final fun getHeight ()Ljava/lang/Long;
 	public final fun getLanguage ()Ljava/lang/String;
 	public final fun getRdsUecp ()Ljava/lang/Boolean;
-	public final fun getSampleRate ()Ljava/lang/Long;
+	public final fun getSampleRateIndex ()Ljava/lang/Long;
 	public final fun getStreamIndex ()J
 	public final fun getStreamType ()Ljava/lang/String;
 	public final fun getWidth ()Ljava/lang/Long;
@@ -1992,20 +1992,19 @@ public final class at/bernhardberger/tvheadend/htsp/requests/AuthenticateRequest
 }
 
 public final class at/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse {
-	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/Boolean;
-	public final fun component10 ()Ljava/lang/Long;
-	public final fun component11 ()Ljava/lang/String;
+	public final fun component10 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/Boolean;
 	public final fun component3 ()Ljava/lang/Boolean;
 	public final fun component4 ()Ljava/lang/Boolean;
 	public final fun component5 ()Ljava/lang/Boolean;
-	public final fun component6 ()Ljava/lang/Boolean;
+	public final fun component6 ()Ljava/lang/Long;
 	public final fun component7 ()Ljava/lang/Long;
 	public final fun component8 ()Ljava/lang/Long;
 	public final fun component9 ()Ljava/lang/Long;
-	public final fun copy (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)Lat/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse;
-	public static synthetic fun copy$default (Lat/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lat/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse;
+	public final fun copy (Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)Lat/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse;
+	public static synthetic fun copy$default (Lat/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lat/bernhardberger/tvheadend/htsp/requests/AuthenticateResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAdmin ()Ljava/lang/Boolean;
 	public final fun getAnonymous ()Ljava/lang/Boolean;
@@ -2014,7 +2013,6 @@ public final class at/bernhardberger/tvheadend/htsp/requests/AuthenticateRespons
 	public final fun getLimitAll ()Ljava/lang/Long;
 	public final fun getLimitDvr ()Ljava/lang/Long;
 	public final fun getLimitStreaming ()Ljava/lang/Long;
-	public final fun getNoAccess ()Ljava/lang/Boolean;
 	public final fun getStreaming ()Ljava/lang/Boolean;
 	public final fun getUiLanguage ()Ljava/lang/String;
 	public final fun getUiLevel ()Ljava/lang/Long;
@@ -2706,9 +2704,9 @@ public final class at/bernhardberger/tvheadend/htsp/requests/HtspEpgBroadcastObj
 	public final fun getCredits ()Lat/bernhardberger/tvheadend/htsp/model/HtspProgrammeCredits;
 	public final fun getDeafSigned ()Z
 	public final fun getDescriptions ()Ljava/util/Map;
+	public final fun getDvbEventId ()Ljava/lang/Long;
 	public final fun getEpisodeLinkUri ()Ljava/lang/String;
 	public final fun getEpisodeNumber ()Lat/bernhardberger/tvheadend/htsp/requests/HtspEpgEpisodeNumber;
-	public final fun getEventId ()Ljava/lang/Long;
 	public final fun getExternalEventId ()Ljava/lang/String;
 	public final fun getFirstAiredEpochSeconds ()Ljava/lang/Long;
 	public final fun getGenres ()Ljava/util/List;
@@ -2718,7 +2716,7 @@ public final class at/bernhardberger/tvheadend/htsp/requests/HtspEpgBroadcastObj
 	public final fun getImage ()Ljava/lang/String;
 	public final fun getKeywords ()Ljava/util/List;
 	public final fun getLines ()Ljava/lang/Long;
-	public final fun getRatingLabel ()Ljava/lang/String;
+	public final fun getRatingLabelUuid ()Ljava/lang/String;
 	public final fun getSeriesLinkUri ()Ljava/lang/String;
 	public final fun getStarRating ()Ljava/lang/Long;
 	public final fun getStartEpochSeconds ()J

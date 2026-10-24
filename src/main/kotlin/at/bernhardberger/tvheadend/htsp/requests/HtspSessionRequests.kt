@@ -90,7 +90,6 @@ public class HelloResponse(
 /**
  * Authentication access observations and limits; each nullable property was absent or malformed when null.
  *
- * @property noAccess whether the account has no HTSP access (`noaccess`); when true the server sends no other field
  * @property admin whether the account has administrator access (`admin`)
  * @property streaming whether the account has streaming access (`streaming`)
  * @property dvr whether the account has DVR access (`dvr`)
@@ -103,7 +102,6 @@ public class HelloResponse(
  * @property uiLanguage web interface language (`uilanguage`); empty when the server has none configured
  */
 public data class AuthenticateResponse(
-    public val noAccess: Boolean?,
     public val admin: Boolean?,
     public val streaming: Boolean?,
     public val dvr: Boolean?,

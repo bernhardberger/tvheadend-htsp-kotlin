@@ -30,7 +30,8 @@ public class HtspEndpoint(
 }
 
 /** Minimum supported server protocol version. Raising it requires a major release; lowering it is compatible. */
-public const val MINIMUM_HTSP_PROTOCOL_VERSION: Long = 36
+@JvmField
+public val MINIMUM_HTSP_PROTOCOL_VERSION: Long = 36
 
 /**
  * Connection timeouts and socket bounds, all durations in milliseconds.
@@ -124,7 +125,7 @@ public data class HtspLiveConnection(
     public val serverFacts: HtspServerFacts,
 )
 
-/** Typed outcome of one connection attempt. */
+/** Typed outcome of one connection attempt. Closed for the 1.x line; safe to match exhaustively. */
 public sealed interface HtspConnectOutcome {
     /**
      * A connection attempt that established one live opaque generation.

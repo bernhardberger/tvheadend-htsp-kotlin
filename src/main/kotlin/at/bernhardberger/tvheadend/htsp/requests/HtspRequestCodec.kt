@@ -320,7 +320,6 @@ internal object `HtspRequestCodecs-internal` {
         )
 
         is AuthenticateRequest -> AuthenticateResponse(
-            noAccess = fields.observedFlag("noaccess"),
             admin = fields.observedFlag("admin"),
             streaming = fields.observedFlag("streaming"),
             dvr = fields.observedFlag("dvr"),
@@ -735,7 +734,7 @@ private fun epgBroadcastObjectFromFields(fields: Map<*, *>): HtspEpgBroadcastObj
         stopEpochSeconds = fields.requiredS64("stop"),
         grabber = fields.optionalString("gr"),
         channelUuid = fields.optionalString("ch"),
-        eventId = fields.optionalU32("eid"),
+        dvbEventId = fields.optionalU32("eid"),
         externalEventId = fields.optionalString("xeid"),
         widescreen = fields.optionalTrueFlag("is_wd"),
         highDefinition = fields.optionalTrueFlag("is_hd"),
@@ -749,7 +748,7 @@ private fun epgBroadcastObjectFromFields(fields: Map<*, *>): HtspEpgBroadcastObj
         aspectRatio = fields.optionalU32("aspect"),
         starRating = fields.optionalU32("star"),
         ageRating = fields.optionalU32("age"),
-        ratingLabel = fields.optionalString("ratlab"),
+        ratingLabelUuid = fields.optionalString("ratlab"),
         image = fields.optionalString("img"),
         titles = fields.optionalStringMap("tit"),
         subtitles = fields.optionalStringMap("sti"),

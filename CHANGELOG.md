@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+- **BREAKING:** three properties are renamed so their names say what the server
+  sends. `HtspEpgBroadcastObject.eventId` is now `dvbEventId`, because it holds
+  the DVB event id (`eid`), not the broadcast id that `getEvent` takes.
+  `HtspEpgBroadcastObject.ratingLabel` is now `ratingLabelUuid`, because it holds
+  a rating-label UUID, not display text. `HtspSubscriptionStream.sampleRate` is
+  now `sampleRateIndex`, because it holds the MPEG-4 sampling-frequency index,
+  not hertz. Rename the properties and named arguments in your code and
+  recompile.
+- **BREAKING:** `AuthenticateResponse.noAccess` is removed. A reply with
+  `noaccess: 1` has always arrived as `AccessDenied` or `ConnectionLimit`, so an
+  `Ok` response could never carry `true`. Drop the argument or property and
+  recompile.
+- **BREAKING:** `MINIMUM_HTSP_PROTOCOL_VERSION` is no longer a compile-time
+  constant, so a future lower minimum reaches compiled consumers without a
+  rebuild. The JVM static field is unchanged; only uses in annotations or other
+  constant expressions need changing.
+- `docs/versioning.md` now states that source compatibility for optional
+  parameters of the request convenience functions covers named arguments only,
+  and that new request parameters are added before `timeoutMs`.
+- `HtspResult`, `HtspFailure`, `HtspConnectOutcome` and `HtspConnectionState` now
+  say in their KDoc that they are closed for 1.x and safe to match exhaustively.
+- The `HtspResult.MalformedReply` KDoc no longer says the initial-sync wait
+  returns it for skipped metadata; that wait has returned `Ok` since `1.0.0-beta.2`.
 - The protocol notes and source citations now pin Tvheadend master
   `51ec612fa22c4c78b4697e4c262c943da9cbd6cc`, still HTSP v44. The upstream changes
   since `f082b430` do not change anything the client sends or decodes, so only the

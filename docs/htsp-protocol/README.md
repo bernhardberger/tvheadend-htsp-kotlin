@@ -254,7 +254,7 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
   maps strict string keys and values; string-list output is sorted and unique. `time_t` values remain Unix
   seconds. `cred` maps person names to role strings, produced by
   `src/epggrab/module/xmltv.c:726–740` and serialized by `src/epg.c:1796–1798`.
-  `ratingLabel` is a rating-label UUID (`src/epg.c:1770–1772`). The official reply is `TODO`.
+  `ratlab` (`HtspEpgBroadcastObject.ratingLabelUuid`) is a rating-label UUID (`src/epg.c:1770–1772`). The official reply is `TODO`.
 - `getDvrCutpoints` preserves `dc_start_ms` and `dc_end_ms`, source TAILQ order,
   overlaps, and duplicates. The official page does not define the millisecond
   origin, chronology, overlap, or uniqueness semantics.

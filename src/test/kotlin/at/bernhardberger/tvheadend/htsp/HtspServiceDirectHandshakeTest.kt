@@ -420,7 +420,6 @@ internal class HtspServiceDirectHandshakeTest : HtspServiceLifecycleFixture() {
                 assertEquals(
                     HtspResult.Ok(
                         AuthenticateResponse(
-                            noAccess = false,
                             admin = true,
                             streaming = true,
                             dvr = true,

@@ -116,7 +116,7 @@ public data class HtspQueueStatusMessage(
  * @property audioType audio type code (`audio_type`); `null` for non-audio streams
  * @property audioVersion audio version code (`audio_version`); `null` for non-audio streams or when the server omitted it
  * @property channelCount number of audio channels (`channels`); `null` for non-audio streams or when the server omitted it
- * @property sampleRate audio sampling-frequency index (`rate`), the server's MPEG-4 style index rather than hertz; `null` when the server omitted it
+ * @property sampleRateIndex audio sampling-frequency index (`rate`), the server's MPEG-4 style index rather than hertz; `null` when the server omitted it
  */
 public data class HtspSubscriptionStream(
     public val streamIndex: Long,
@@ -133,7 +133,7 @@ public data class HtspSubscriptionStream(
     public val audioType: Long?,
     public val audioVersion: Long?,
     public val channelCount: Long?,
-    public val sampleRate: Long?,
+    public val sampleRateIndex: Long?,
     /** HTSP `rds_uecp`: optional 0/1 RDS UECP flag (pinned htsp_server.c:4366). */
     public val rdsUecp: Boolean?,
 ) {
@@ -149,7 +149,7 @@ public data class HtspSubscriptionStream(
                     audioType,
                     audioVersion,
                     channelCount,
-                    sampleRate,
+                    sampleRateIndex,
                 ).forEach { requireU32("stream field", it) }
         frameDurationUs?.let { require(it >= 0L) { "frameDurationUs must be non-negative" } }
     }

@@ -351,7 +351,7 @@ internal class HtspNearLiveIntegrationTest {
                             if (stream.width != null || stream.height != null) {
                                 videoStreams += stream.streamIndex
                             }
-                            if (stream.sampleRate != null || stream.channelCount != null) {
+                            if (stream.sampleRateIndex != null || stream.channelCount != null) {
                                 audioStreams += stream.streamIndex
                             }
                         }

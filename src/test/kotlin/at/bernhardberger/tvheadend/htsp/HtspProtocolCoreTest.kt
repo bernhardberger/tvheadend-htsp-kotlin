@@ -804,7 +804,6 @@ class HtspProtocolCoreTest {
         assertEquals(
             HtspResult.Ok(
                 AuthenticateResponse(
-                    noAccess = false,
                     admin = false,
                     streaming = true,
                     dvr = true,
@@ -1644,7 +1643,7 @@ class HtspProtocolCoreTest {
                         stopEpochSeconds = Long.MAX_VALUE,
                         grabber = "",
                         channelUuid = "channel-uuid",
-                        eventId = 0xffff_ffffL,
+                        dvbEventId = 0xffff_ffffL,
                         externalEventId = "external-id",
                         widescreen = true,
                         highDefinition = true,
@@ -1658,7 +1657,7 @@ class HtspProtocolCoreTest {
                         aspectRatio = 0xffff_ffffL,
                         starRating = 3L,
                         ageRating = 12L,
-                        ratingLabel = "rating-label",
+                        ratingLabelUuid = "rating-label",
                         image = "image-ref",
                         titles = mapOf("eng" to "Title", "deu" to "Titel"),
                         subtitles = mapOf("eng" to "Subtitle"),

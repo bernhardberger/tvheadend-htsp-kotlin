@@ -1,6 +1,10 @@
 package at.bernhardberger.tvheadend.htsp.connection
 
-/** Typed outcome for one HTSP request. Cancellation is never represented here. */
+/**
+ * Typed outcome for one HTSP request. Cancellation is never represented here.
+ *
+ * Closed for the 1.x line; safe to match exhaustively.
+ */
 public sealed interface HtspResult<out R> {
     /** The request completed successfully with [value]. */
     public data class Ok<out R>(public val value: R) : HtspResult<R>
@@ -31,8 +35,8 @@ public sealed interface HtspResult<out R> {
     /**
      * A reply arrived but could not be decoded: an envelope field was malformed or the typed
      * decoder could not map the reply to the protocol model. Carries no text or throwable.
-     * Initial-sync orchestration also returns this when malformed asynchronous metadata
-     * precedes the sync marker: the response is incomplete even though the transport stays live.
+     * Skipped asynchronous metadata is never reported this way: it arrives as
+     * [HtspTransportEvent.MalformedMetadata] and does not make the initial-sync wait fail.
      *
      * The server may have performed the request. A subscribe may have created a server-side
      * subscription; its stream stays open, so send unsubscribe if it is not wanted. Do not
@@ -59,6 +63,9 @@ public sealed interface HtspResult<out R> {
 /**
  * Failure returned by a typed HTSP request. Only [HtspResult.ServerError] carries a value: the
  * server's own error text.
+ *
+ * Closed for the 1.x line; safe to match exhaustively. A new kind of server failure is
+ * reported through an existing member, such as [HtspResult.ServerError], until 2.0.
  */
 public sealed interface HtspFailure : HtspResult<Nothing>
 
