@@ -25,6 +25,8 @@
   say in their KDoc that they are closed for 1.x and safe to match exhaustively.
 - The `HtspResult.MalformedReply` KDoc no longer says the initial-sync wait
   returns it for skipped metadata; that wait has returned `Ok` since `1.0.0-beta.2`.
+- `docs/versioning.md` has a table of the minimum and default HTSP versions of
+  each library release.
 - The protocol notes and source citations now pin Tvheadend master
   `51ec612fa22c4c78b4697e4c262c943da9cbd6cc`, still HTSP v44. The upstream changes
   since `f082b430` do not change anything the client sends or decodes, so only the

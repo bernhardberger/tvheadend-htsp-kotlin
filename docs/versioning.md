@@ -22,6 +22,23 @@ The public manifest identifies that commit and the dedicated signing fingerprint
 on 2026-10-16 matched its manifest SHA-256:
 `7987c531c85fd013e2584ec6a200a2a2941c0130c0cf22d831fdd15148891558`.
 
+## HTSP protocol coverage
+
+Library versions and HTSP protocol versions are separate numbers. The library
+version follows the compatibility rules below; the HTSP version is negotiated
+with each server at connect time. The library requests its default version and
+the server answers with the lower of that and its own.
+
+| Library releases | Minimum server HTSP | Requested by default |
+|---|---|---|
+| `0.1.0` to `0.10.0` | none enforced | 43 |
+| `1.0.0-beta.1` to `1.0.0-beta.4` | 36 | 44 |
+
+The default requested version is also the highest version the typed API
+covers. A release that changes either column adds a row here and says so in
+its release notes. The upstream source the protocol notes cite is pinned in
+[`htsp-protocol/upstream.json`](htsp-protocol/upstream.json).
+
 ## Provisional 0.x policy
 
 While the major version is zero, the public API and behavior are provisional.
