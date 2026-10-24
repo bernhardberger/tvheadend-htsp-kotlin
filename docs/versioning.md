@@ -1,26 +1,26 @@
 # Versioning and compatibility
 
 The current immutable release coordinate is
-`at.bernhardberger.tvheadend:htsp:1.0.0-beta.4`, the fourth pre-release of
-`1.0.0`. It changes the timeout of the initial-sync wait to an idle limit; the
-release notes mark that change as breaking. Like every pre-release it makes no
+`at.bernhardberger.tvheadend:htsp:1.0.0-rc.1`, the first release candidate of
+`1.0.0`. It settles the last public API names and compatibility promises; the
+release notes mark three changes as breaking. Like every pre-release it makes no
 compatibility promise toward later pre-releases or `1.0.0`. Published release
 bytes are immutable and must never be replaced.
 
-The `1.0.0-beta.4` coordinate is available from
-[Maven Central](https://central.sonatype.com/artifact/at.bernhardberger.tvheadend/htsp/1.0.0-beta.4),
-with its [repository files](https://repo1.maven.org/maven2/at/bernhardberger/tvheadend/htsp/1.0.0-beta.4/)
+The `1.0.0-rc.1` coordinate is available from
+[Maven Central](https://central.sonatype.com/artifact/at.bernhardberger.tvheadend/htsp/1.0.0-rc.1),
+with its [repository files](https://repo1.maven.org/maven2/at/bernhardberger/tvheadend/htsp/1.0.0-rc.1/)
 available directly. Publication and availability remain independently verified
 external state for every release.
 
-The [exact-tag release workflow](https://github.com/bernhardberger/tvheadend-htsp-kotlin/actions/runs/38954709848)
-passed on `088994ced6a3eb15410955ae38ac9d6e63cecf0b`, verifying all 20 signed and
+The [exact-tag release workflow](https://github.com/bernhardberger/tvheadend-htsp-kotlin/actions/runs/40105283379)
+passed on `79899dd929ad4b4eeff2904494200d7c5722c5dc`, verifying all 20 signed and
 checksummed Central members and both
-[GitHub prerelease assets](https://github.com/bernhardberger/tvheadend-htsp-kotlin/releases/tag/v1.0.0-beta.4).
+[GitHub prerelease assets](https://github.com/bernhardberger/tvheadend-htsp-kotlin/releases/tag/v1.0.0-rc.1).
 The public manifest identifies that commit and the dedicated signing fingerprint
 `EAB02E488E7B944EAA6D65814BF0412FD2A3B741`. A separate public Central JAR download
-on 2026-10-16 matched its manifest SHA-256:
-`7987c531c85fd013e2584ec6a200a2a2941c0130c0cf22d831fdd15148891558`.
+on 2026-10-24 matched its manifest SHA-256:
+`416caf79b561d200660c23f6c5c31fa7a034d6f907543e6a914fe8ac48775294`.
 
 ## HTSP protocol coverage
 
