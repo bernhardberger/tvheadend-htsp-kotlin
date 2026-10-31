@@ -24,7 +24,7 @@ internal class HtspServiceHandshakeFactsTest : HtspServiceLifecycleFixture() {
 
     @Test
     fun protocolVersionsCoverTheU32DomainWithoutNarrowing() {
-        assertEquals(44L, HtspConnectOptions().requestedProtocolVersion)
+        assertEquals(45L, HtspConnectOptions().requestedProtocolVersion)
         val maximum = 0xffff_ffffL
         assertEquals(maximum, HtspConnectOptions(requestedProtocolVersion = maximum).requestedProtocolVersion)
         assertEquals(maximum, HtspConnectOptions().copy(requestedProtocolVersion = maximum).requestedProtocolVersion)
@@ -248,7 +248,7 @@ internal class HtspServiceHandshakeFactsTest : HtspServiceLifecycleFixture() {
                 ))
 
                 val hello = requireNotNull(server.handshakeFields["hello"])
-                assertEquals(44L, hello["htspversion"])
+                assertEquals(45L, hello["htspversion"])
                 assertEquals("Kotlin HTSP client", hello["clientname"])
                 assertTrue(!hello.containsKey("clientversion"))
                 val auth = requireNotNull(server.handshakeFields["authenticate"])

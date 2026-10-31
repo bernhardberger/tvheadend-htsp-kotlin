@@ -50,8 +50,8 @@ At runtime the artifact needs only the Kotlin standard library and
 - A Tvheadend server that reports HTSP 36 or newer; HTSP 36 first appeared
   upstream in August 2021. The client rejects older servers before
   authentication with `UNSUPPORTED_SERVER_VERSION`.
-- The client asks for HTSP 44 by default, the newest version the typed API
-  covers, and the server negotiates down. Fields a v36–v43 server doesn't send
+- The client asks for HTSP 45 by default, the newest version the typed API
+  covers, and the server negotiates down. Fields a v36–v44 server doesn't send
   are nullable.
 
 ## Installation
