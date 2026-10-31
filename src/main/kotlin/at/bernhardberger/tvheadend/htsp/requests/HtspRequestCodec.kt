@@ -763,6 +763,9 @@ private fun epgBroadcastObjectFromFields(fields: Map<*, *>): HtspEpgBroadcastObj
         seriesLinkUri = fields.optionalString("slink"),
         episodeLinkUri = fields.optionalString("elink"),
         credits = decodeProgrammeCredits(fields, "cred", ::malformedReply),
+        imagePoster = fields.optionalString("img_poster"),
+        imageBackdrop = fields.optionalString("img_backdrop"),
+        imageStill = fields.optionalString("img_still"),
     )
 }
 

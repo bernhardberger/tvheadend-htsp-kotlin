@@ -219,6 +219,75 @@ class HtspPreReleaseSliceTest {
     }
 
     @Test
+    fun typedProgrammeImagesDecodeInEventAndDvrShapesPreservingEmptyAndAbsence() {
+        val base = mapOf("eventId" to 1L, "start" to 2L, "stop" to 3L)
+        val keys = listOf("imagePoster", "imageBackdrop", "imageStill")
+        fun HtspEvent.images() = listOf(imagePoster, imageBackdrop, imageStill)
+        listOf(
+            listOf(null, null, null),
+            listOf("imagecache/7", "imagecache/8", "imagecache/9"),
+            listOf("", "", ""),
+            listOf("imagecache/7", "", null),
+        ).forEach { expected ->
+            val artwork = keys.zip(expected).filter { it.second != null }.toMap()
+            val fields = base + artwork
+            listOf(44L, 45L).forEach { version ->
+                assertEquals(expected, HtspRequestCodecs.decode(GetEventRequest(1), fields, version).event.images())
+                assertEquals(expected, HtspRequestCodecs.decode(GetEventsRequest(), mapOf("events" to listOf(fields)), version).events.single().images())
+                val query = HtspRequestCodecs.decode(EpgQueryRequest("", full = true), mapOf("events" to listOf(fields)), version)
+                assertEquals(expected, (query as EpgQueryResponse.Events).events.single().images())
+            }
+            assertEquals(expected, (decode("eventAdd", fields) as HtspEventAddMessage).event.images())
+            val update = decode("eventUpdate", fields) as HtspEventUpdateMessage
+            assertEquals(expected, update.event.images())
+
+            val dvrFields = mapOf("id" to 4L) + artwork
+            val dvrAdd = decode("dvrEntryAdd", dvrFields) as HtspDvrEntryAddMessage
+            assertEquals(expected, with(dvrAdd.entry) { listOf(imagePoster, imageBackdrop, imageStill) })
+            val dvrUpdate = decode("dvrEntryUpdate", dvrFields) as HtspDvrEntryUpdateMessage
+            assertEquals(expected, with(dvrUpdate.entry) { listOf(imagePoster, imageBackdrop, imageStill) })
+        }
+        val statsFields = mapOf("method" to "dvrEntryUpdate", "id" to 4L, "idStr" to "dvr-uuid",
+            "state" to "recording", "dataSize" to 5L)
+        val statsOnly = (decodeHtspServerMessage(statsFields) as HtspServerMessageDecoded).message as HtspDvrEntryStatsMessage
+        assertEquals(5L, statsOnly.dataSizeBytes)
+        keys.forEach { key ->
+            // Artwork belongs only to full replacements, never sparse statistics updates.
+            assertEquals(HtspServerMessageMalformedKnownMessage, decodeHtspServerMessage(statsFields + (key to "")))
+        }
+
+        keys.forEach { key ->
+            val bad = base + (key to 1L)
+            assertThrows(HtspProtocolMappingException::class.java) { HtspRequestCodecs.decode(GetEventRequest(1), bad, 45) }
+            listOf("eventAdd", "eventUpdate").forEach { method ->
+                assertEquals(HtspServerMessageMalformedKnownMessage, decodeHtspServerMessage(bad + ("method" to method)))
+            }
+            listOf("dvrEntryAdd", "dvrEntryUpdate").forEach { method ->
+                assertEquals(
+                    HtspServerMessageMalformedKnownMessage,
+                    decodeHtspServerMessage(metadataFixture(method) + mapOf("id" to 4L, key to 1L)),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun programmeArtworkIsRedactedThroughModelsAndResponseWrappers() {
+        val artwork = mapOf("imagePoster" to "private-poster", "imageBackdrop" to "private-backdrop", "imageStill" to "private-still")
+        val event = HtspRequestCodecs.decode(GetEventRequest(1),
+            mapOf("eventId" to 1L, "start" to 2L, "stop" to 3L) + artwork, 45).event
+        val broadcast = HtspRequestCodecs.decode(GetEpgObjectRequest(1), mapOf(
+            "id" to 1L, "tp" to 1L, "up" to 2L, "start" to 3L, "stop" to 4L,
+            "img_poster" to "private-poster", "img_backdrop" to "private-backdrop", "img_still" to "private-still",
+        ), 45).broadcast
+        listOf(event, broadcast, GetEventResponse(event), GetEventsResponse(listOf(event)),
+            EpgQueryResponse.Events(listOf(event)), GetEpgObjectResponse(broadcast)).forEach { value ->
+            artwork.values.forEach { image -> assertFalse(value.toString().contains(image)) }
+            assertTrue(value.toString().contains("<redacted>"))
+        }
+    }
+
+    @Test
     fun getChannelHbbtvDecodesValidAndRejectsMalformedOuterType() {
         val fields = channelFields(mapOf("0" to listOf(mapOf("url" to "relative", "visibility" to "all"))))
         val response = HtspRequestCodecs.decode(GetChannelRequest(1), fields, 44)

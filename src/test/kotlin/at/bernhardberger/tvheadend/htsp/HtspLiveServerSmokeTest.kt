@@ -64,7 +64,7 @@ class HtspLiveServerSmokeTest {
                 assertTrue(outcome is HtspConnectOutcome.Connected, "connect: $outcome")
                 val live = (outcome as HtspConnectOutcome.Connected).connection
                 val protocolVersion = live.protocolVersion
-                assertTrue(protocolVersion in 1..44, "protocol version: $protocolVersion")
+                assertTrue(protocolVersion in 1..45, "protocol version: $protocolVersion")
 
                 val sync = connection.enableAsyncMetadataAwaitingInitialSync(idleTimeoutMs = 60_000L)
                 assertTrue(sync is HtspResult.Ok, "initial sync: $sync")
