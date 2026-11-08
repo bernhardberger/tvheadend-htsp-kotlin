@@ -1,18 +1,16 @@
 # HTSP binary wire format
 
-The golden frame fixtures under `src/test/resources/htsp-wire/` record the
-codec's deliberate differences from the pinned Tvheadend server.
+The golden frame fixtures under `src/test/resources/htsp-wire/` pin complete
+example frames for the codec tests. The codec's deliberate differences from the
+pinned Tvheadend server are described below.
 
 Each `.hex` file holds one complete frame. Whitespace separates two-digit
 hexadecimal bytes, and `#` starts a comment that runs to the end of the line.
 The test loader rejects any other token.
 
-Most fixtures are decoded and then re-encoded to the same bytes. A few are decode-only,
-because the pinned server's output cannot always be reproduced byte-for-byte by
-the local encoder. Decode-only fixtures pin the exact bytes and the decoded
-values and are explicitly exempt from re-encode. `boolean-false.hex` is one:
-the pinned server emits false as a zero-length BOOL, while the local encoder
-emits one Boolean byte.
+`scalar-types.hex` is decoded and then re-encoded to the same bytes in
+`HtspGoldenCorpusTest`; `hello.hex` is a plain follow-on frame for the
+malformed-frame catalog.
 
 The `scripted-*-response.hex` fixtures are deterministic server replies used by
 the public socket-factory integration test. They drive `hello`, anonymous
@@ -74,10 +72,9 @@ nonzero. Every other length decodes false, consuming the entire declared field
 `HtspMalformedFrameCatalogTest.booleanLengths_followUpstreamAndPreserveFollowingFieldAndFrameAlignment`
 pins lengths zero, one (0x00, 0x01, 0xFF), and greater than one.
 
-The pinned serializer normally emits false with data length zero. The
-decode-only `boolean-false.hex` fixture pins its exact 30-byte body and the
-`false` decode in
-`HtspGoldenCorpusTest.booleanFalse_decodeOnlyPinsPinnedZeroLengthEncoding`.
+The pinned serializer normally emits false with data length zero, which the
+length-zero case above decodes as `false`. The local encoder emits false as one
+zero byte (`HtspCodecEncodingTest.localFalse_hasOneByteAndEmptyBinaryHasNone`).
 
 ## Where the local codec is more lenient
 
@@ -89,9 +86,9 @@ silently drained.
 
 | Input | Local behavior | Pinned server | Classification | Pinning test |
 |---|---|---|---|---|
-| Unknown type ID | Preserve the complete field data as a raw `ByteArray`. | Frees the field and rejects the whole message. | Local leniency diverging from pin. | `HtspMalformedFrameCatalogTest.unknownTypeId_decodesExactRawBytes` |
+| Unknown type ID | Preserve the complete field data as a raw `ByteArray`. | Frees the field and rejects the whole message. | Local leniency diverging from pin. | `HtspMalformedFrameCatalogTest.typeSix_decodesLikeUnknownTypeAndPreservesFollowingFieldAlignment` |
 | Type 6, including eight-byte data | Preserve the complete field data as a raw `ByteArray`, like other unknown types. | No decode case: rejects every type 6; serializer has no case and aborts. | Unknown-type leniency, not a supported double type. | `HtspMalformedFrameCatalogTest.typeSix_decodesLikeUnknownTypeAndPreservesFollowingFieldAlignment` |
-| One to five residual bytes after the last complete root/container field | Attempts another field and rejects; one deterministic residual root byte reports `HtspFramingException` with `field byte exceeds enclosing frame`. | Rejects when the decode loop returns with any residue. | Both reject; the local failure taxonomy differs. | `HtspMalformedFrameCatalogTest.oneResidualRootByteAfterCompleteField_isNotSilentlyDrained` |
+| One to five residual bytes after the last complete root/container field | Attempts another field and rejects; residual root or container bytes report `HtspFramingException` with `field byte exceeds enclosing frame`. | Rejects when the decode loop returns with any residue. | Both reject; the local failure taxonomy differs. | `HtspCodecTest.shortRootAndNestedHeadersPreserveFramingOffsetsAndPhysicalEofPriority` |
 
 ## Malformed and truncated input
 
@@ -101,17 +98,10 @@ Physical EOF while reading a declared header, name, or data region remains
 
 | Condition | Local outcome | Pinned server | Pinning test |
 |---|---|---|---|
-| Root length zero or greater than 32 MiB | `HtspFramingException` with `invalid root length` at byte offset 0. | Local safety bound and taxonomy; not asserted as pinned-server behavior. | `HtspMalformedFrameCatalogTest.rootLengthZero_isInvalidRootFramingFailure`; `rootLengthAbove32MiB_isInvalidRootFramingFailure` |
-| EOF inside the four-byte root header, a declared field name, or declared field data | `EOFException`. | Physical truncation is rejected by both; `EOFException` is local taxonomy. | `HtspMalformedFrameCatalogTest.eofMidRootHeader_isEof`; `eofMidFieldName_isEof`; `eofMidFieldData_isEof` |
-| Field name plus data exceeds its enclosing root or container bound | `HtspFramingException` with `field name and data exceed enclosing frame`. | Rejects an over-bound field. | `HtspMalformedFrameCatalogTest.fieldNameAndDataBeyondEnclosingRoot_isFramingFailure`; `fieldNameAndDataBeyondEnclosingContainer_isFramingFailure` |
+| Root length zero or greater than 32 MiB | `HtspFramingException` with `invalid root length` at byte offset 0. | Local safety bound and taxonomy; not asserted as pinned-server behavior. | `HtspMalformedFrameCatalogTest.rootLengthZero_isInvalidRootFramingFailure`; `HtspCodecTest.maximumRootLengthReadsBinaryDirectlyAndOversizeNeverReadsBody` |
+| EOF inside the four-byte root header, a declared field name, or declared field data | `EOFException`. | Physical truncation is rejected by both; `EOFException` is local taxonomy. | `HtspMalformedFrameCatalogTest.eofMidRootHeader_isEof`; `HtspCodecTest.bulkReadsKeepRegionSpecificEofMessages` |
+| Field name plus data exceeds its enclosing root or container bound | `HtspFramingException` with `field name and data exceed enclosing frame`. | Rejects an over-bound field. | `HtspCodecTest.invalidFieldLengthIsRejectedBeforeAttemptingItsMissingNameOrBody`; `HtspMalformedFrameCatalogTest.fieldNameAndDataBeyondEnclosingContainer_isFramingFailure` |
 | Nesting beyond 32 containers | `HtspFramingException` with `nesting exceeds limit`; the 32-container boundary remains parseable. | The depth limit and taxonomy are local safety policy. | `HtspMalformedFrameCatalogTest.nestingBeyond32_isFramingFailure`; `nestingAt32_remainsParseable` |
-
-`HtspCodecDeterministicFuzzTest` supplements the catalog with fixed-seed,
-CI-bounded mutation of every golden frame, including the decode-only BOOL false
-fixture, and with generation of small random bodies. It permits only a decoded
-message, `EOFException`, or `HtspFramingException`, and it guards reads at four
-bytes plus the unsigned declared root length. Its extension test separately
-pins that physical bytes beyond a smaller declared root remain unread.
 
 ## Pinned source
 

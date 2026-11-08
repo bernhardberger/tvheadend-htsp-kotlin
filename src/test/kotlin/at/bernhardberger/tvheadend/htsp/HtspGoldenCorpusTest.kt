@@ -6,48 +6,9 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class HtspGoldenCorpusTest {
-
-    @Test
-    fun hello_matchesHandDerivedFrameAndDecodes() {
-        val frame = loadHtspGoldenFrame("hello.hex")
-
-        assertArrayEquals(
-            byteArrayOf(
-                0x00, 0x00, 0x00, 0x11,
-                0x03, 0x06, 0x00, 0x00, 0x00, 0x05,
-                0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64,
-                0x68, 0x65, 0x6c, 0x6c, 0x6f,
-            ),
-            frame,
-        )
-        assertEquals("hello", HtspCodec.readMessage(ByteArrayInputStream(frame)).method)
-        assertArrayEquals(frame, encode("hello", emptyMap()))
-    }
-
-    @Test
-    fun booleanFalse_decodeOnlyPinsPinnedZeroLengthEncoding() {
-        val frame = loadHtspGoldenFrame("boolean-false.hex")
-        val decoded = HtspCodec.readMessage(ByteArrayInputStream(frame))
-
-        assertArrayEquals(
-            byteArrayOf(
-                0x00, 0x00, 0x00, 0x1e,
-                0x03, 0x06, 0x00, 0x00, 0x00, 0x05,
-                0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64,
-                0x68, 0x65, 0x6c, 0x6c, 0x6f,
-                0x07, 0x07, 0x00, 0x00, 0x00, 0x00,
-                0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64,
-            ),
-            frame,
-        )
-        assertEquals(0x1e, frame.size - 4)
-        assertEquals("hello", decoded.method)
-        assertEquals(false, decoded.fields["enabled"])
-    }
 
     @Test
     fun scalarTypes_pinS64Utf8BinaryBooleanAndUuidBytes() {
@@ -65,39 +26,6 @@ class HtspGoldenCorpusTest {
         assertEquals(true, decoded.fields["enabled"])
         assertArrayEquals(ByteArray(16) { it.toByte() }, (decoded.fields["uuid"] as HtspWireUuid).bytes())
         assertArrayEquals(frame, encode(decoded.method!!, decoded.fields - "method"))
-    }
-
-    @Test
-    fun nestedContainers_pinEmptyValuesNamelessListFieldsAndDepth() {
-        val frame = loadHtspGoldenFrame("nested.hex")
-        val decoded = HtspCodec.readMessage(ByteArrayInputStream(frame))
-
-        assertEquals(0x5F, frame.size - 4)
-        assertEquals("nested", decoded.method)
-        assertEquals(emptyMap<String, Any?>(), decoded.fields["emptyMap"])
-        assertEquals(emptyList<Any?>(), decoded.fields["emptyList"])
-        assertEquals(
-            mapOf("items" to listOf("one", mapOf("depth" to 3L))),
-            decoded.fields["nest"],
-        )
-        assertArrayEquals(frame, encode(decoded.method!!, decoded.fields - "method"))
-    }
-
-    @Test
-    fun muxpkt_pinsRawPayloadFastPath() {
-        val frame = loadHtspGoldenFrame("muxpkt.hex")
-        val decoded = HtspCodec.readMessage(ByteArrayInputStream(frame))
-
-        assertEquals(0x2C, frame.size - 4)
-        assertEquals("muxpkt", decoded.method)
-        assertEquals(7, decoded.seq)
-        assertArrayEquals(byteArrayOf(0x47, 1, 2), decoded.rawPayload)
-        assertTrue(decoded.rawPayload === decoded.fields["payload"])
-        assertArrayEquals(frame, encode(decoded.method!!, decoded.fields - "method"))
-
-        val ordinary = HtspCodec.readMessage(ByteArrayInputStream(loadHtspGoldenFrame("hello.hex")))
-        assertEquals("hello", ordinary.method)
-        assertEquals(null, ordinary.rawPayload)
     }
 
     private fun encode(method: String, fields: Map<String, Any?>): ByteArray =

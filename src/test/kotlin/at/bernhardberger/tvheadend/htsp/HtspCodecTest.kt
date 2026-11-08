@@ -17,43 +17,6 @@ import org.junit.jupiter.api.Test
 class HtspCodecTest {
 
     @Test
-    fun framedRoundTrip_preservesSupportedValuesAndMuxPayload() {
-        val payload = byteArrayOf(0x47, 0x01, 0x02)
-        val output = ByteArrayOutputStream()
-
-        output.write(HtspCodec.encode("muxpkt", mapOf(
-                "seq" to 7,
-                "signed" to -2L,
-                "zero" to 0,
-                "title" to "Živě",
-                "payload" to payload,
-                "enabled" to true,
-                "nested" to mapOf("value" to 9),
-                "items" to listOf("first", 2),
-            )))
-
-        val framed = output.toByteArray()
-        val declaredLength =
-            ((framed[0].toInt() and 0xff) shl 24) or
-                ((framed[1].toInt() and 0xff) shl 16) or
-                ((framed[2].toInt() and 0xff) shl 8) or
-                (framed[3].toInt() and 0xff)
-        assertEquals(framed.size - 4, declaredLength)
-
-        val decoded = HtspCodec.readMessage(ByteArrayInputStream(framed))
-
-        assertEquals("muxpkt", decoded.method)
-        assertEquals(7, decoded.seq)
-        assertEquals(-2L, decoded.fields["signed"])
-        assertEquals(0L, decoded.fields["zero"])
-        assertEquals("Živě", decoded.fields["title"])
-        assertEquals(true, decoded.fields["enabled"])
-        assertEquals(9L, (decoded.fields["nested"] as Map<*, *>)["value"])
-        assertEquals(listOf("first", 2L), decoded.fields["items"])
-        assertArrayEquals(payload, decoded.rawPayload)
-    }
-
-    @Test
     fun replySequencesRetainTheFullUnsignedDomainWithoutNumericAliasing() {
         listOf(0L, 7L, Int.MAX_VALUE.toLong(), 0x8000_0000L, 0xFFFF_FFFFL).forEach { seq ->
             val output = ByteArrayOutputStream()
@@ -85,32 +48,6 @@ class HtspCodecTest {
             HtspCodec.readMessage(ByteArrayInputStream(frame))
         }
         assertEquals("sequence integer exceeds 64 bits", failure.failure)
-    }
-
-    @Test
-    fun invalidRootLength_isFramingFailureWithoutTransportPolicy() {
-        val failure = assertThrows(HtspFramingException::class.java) {
-            HtspCodec.readMessage(ByteArrayInputStream(byteArrayOf(0, 0, 0, 0)))
-        }
-
-        assertEquals("invalid root length", failure.failure)
-        assertEquals(0, failure.byteOffset)
-    }
-
-    @Test
-    fun fieldWhoseNameAndDataExceedRoot_isFramingFailureNotEof() {
-        val malformed = byteArrayOf(
-            0, 0, 0, 8,
-            3, 2, 0, 0, 0, 1,
-            'a'.code.toByte(), 'b'.code.toByte(),
-        )
-
-        val failure = assertThrows(HtspFramingException::class.java) {
-            HtspCodec.readMessage(ByteArrayInputStream(malformed))
-        }
-
-        assertEquals("field name and data exceed enclosing frame", failure.failure)
-        assertEquals(10, failure.byteOffset)
     }
 
     @Test

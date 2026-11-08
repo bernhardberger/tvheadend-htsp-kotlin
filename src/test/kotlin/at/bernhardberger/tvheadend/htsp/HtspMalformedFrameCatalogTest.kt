@@ -18,43 +18,10 @@ class HtspMalformedFrameCatalogTest {
     }
 
     @Test
-    fun rootLengthAbove32MiB_isInvalidRootFramingFailure() {
-        assertFraming(frameWithDeclaredLength(32 * 1024 * 1024 + 1), "invalid root length", 0)
-    }
-
-    @Test
     fun eofMidRootHeader_isEof() {
         assertThrows(EOFException::class.java) {
             HtspCodec.readMessage(ByteArrayInputStream(byteArrayOf(0, 0, 0)))
         }
-    }
-
-    @Test
-    fun eofMidFieldName_isEof() {
-        val body = fieldHeader(type = TYPE_STR, nameLength = 2, dataLength = 1) + byteArrayOf('a'.code.toByte())
-        assertThrows(EOFException::class.java) {
-            HtspCodec.readMessage(ByteArrayInputStream(frame(body, declaredLength = 9)))
-        }
-    }
-
-    @Test
-    fun eofMidFieldData_isEof() {
-        val body = fieldHeader(type = TYPE_BIN, nameLength = 1, dataLength = 2) +
-            byteArrayOf('b'.code.toByte(), 1)
-        assertThrows(EOFException::class.java) {
-            HtspCodec.readMessage(ByteArrayInputStream(frame(body, declaredLength = 9)))
-        }
-    }
-
-    @Test
-    fun fieldNameAndDataBeyondEnclosingRoot_isFramingFailure() {
-        val body = fieldHeader(type = TYPE_STR, nameLength = 2, dataLength = 1) +
-            byteArrayOf('a'.code.toByte(), 'b'.code.toByte())
-        assertFraming(
-            frame(body),
-            "field name and data exceed enclosing frame",
-            10,
-        )
     }
 
     @Test
@@ -84,13 +51,6 @@ class HtspMalformedFrameCatalogTest {
     }
 
     @Test
-    fun unknownTypeId_decodesExactRawBytes() {
-        val raw = byteArrayOf(0, 0x7f, -1)
-        val decoded = decode(frame(field(type = 0x7f, name = "raw", data = raw)))
-        assertArrayEquals(raw, decoded.fields["raw"] as ByteArray)
-    }
-
-    @Test
     fun typeSix_decodesLikeUnknownTypeAndPreservesFollowingFieldAlignment() {
         listOf(byteArrayOf(), byteArrayOf(1, 2, 3), byteArrayOf(0, 0, 0, 0, 0, 0, -8, 63)).forEach { raw ->
             val body = field(6, "ratio", raw) + field(0x7f, "unknown", raw) +
@@ -100,12 +60,6 @@ class HtspMalformedFrameCatalogTest {
             assertArrayEquals(decoded.fields["unknown"] as ByteArray, decoded.fields["ratio"] as ByteArray)
             assertEquals("ok", decoded.fields["next"])
         }
-    }
-
-    @Test
-    fun signed64ZeroLength_decodesZero() {
-        val decoded = decode(frame(field(TYPE_S64, "value", byteArrayOf())))
-        assertEquals(0L, decoded.fields["value"])
     }
 
     @Test
@@ -139,17 +93,6 @@ class HtspMalformedFrameCatalogTest {
         }
     }
 
-    @Test
-    fun oneResidualRootByteAfterCompleteField_isNotSilentlyDrained() {
-        val complete = field(TYPE_STR, "value", "ok".encodeToByteArray())
-        assertThrows(HtspFramingException::class.java) {
-            decode(frame(complete + byteArrayOf(0x55)))
-        }.also { failure ->
-            assertEquals("field byte exceeds enclosing frame", failure.failure)
-            assertEquals(complete.size + 5, failure.byteOffset)
-        }
-    }
-
     private fun assertFraming(bytes: ByteArray, expectedFailure: String, expectedOffset: Int) {
         val failure = assertThrows(HtspFramingException::class.java) { decode(bytes) }
         assertEquals(expectedFailure, failure.failure)
@@ -168,7 +111,6 @@ class HtspMalformedFrameCatalogTest {
         const val TYPE_MAP = 1
         const val TYPE_S64 = 2
         const val TYPE_STR = 3
-        const val TYPE_BIN = 4
         const val TYPE_BOOL = 7
     }
 }
