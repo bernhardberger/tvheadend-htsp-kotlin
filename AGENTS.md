@@ -19,7 +19,27 @@ official Tvheadend software or as wholly original work.
   detekt, Konsist, Dokka, GitHub Actions) over bespoke scripts. Do not add new
   repository tooling, checkers, generators, or languages without explicit
   maintainer approval.
-- Behavior changes ship with a focused regression test.
+- Behavior changes ship with a focused regression test, normally as a new case
+  in an existing test. Tests cost build time and maintenance; their count is
+  not evidence of care. Before adding one, find the existing test of that unit
+  and extend it with a case or parameter; start a new test or file only when
+  none fits, and say why. A regression test counts only after it has failed
+  against the pre-fix code. Assert the rule or outcome, not incidental values
+  or internal structure unless that is the contract (wire bytes and field names
+  usually are). Reuse the shared fixtures (`HtspServiceLifecycleFixture`,
+  `HtspMetadataFixtures`, `HtspGoldenFrameLoader`) instead of local copies. A
+  scenario written to prove something for one review is deleted after the
+  decision. Merging or deleting redundant tests in touched code is in scope.
+  Tests run on virtual time: `runTest`, `StandardTestDispatcher` or a shared
+  `TestCoroutineScheduler`, driven with `advanceTimeBy` and `runCurrent`. Where
+  real sockets or threads are involved, use an in-memory fake, or with the
+  loopback `FakeHtspServer` wait for a deterministic signal such as a
+  `CompletableDeferred`, `CountDownLatch` or listener callback. No
+  `Thread.sleep`, no real `delay` to let things settle, no polling loops; a
+  timeout only bounds a hang while waiting for a signal. `detektTest`
+  (`detekt-test.yml`) rejects `Thread.sleep` and test classes named after
+  process steps such as Review, Slice or PreRelease; its baseline lists
+  existing findings, so do not add new ones to it.
 - Use Conventional Commit subjects (`feat(htsp):`, `fix:`, `docs:`, `chore:`),
   with `!` and a `BREAKING` changelog note for incompatible changes.
 - Non-trivial changes to the protocol surface, public API/ABI, concurrency, or
@@ -55,7 +75,8 @@ official Tvheadend software or as wholly original work.
 - `docs/htsp-protocol/` holds the upstream pin record and protocol notes. The
   client requests HTSP v44 by default, matching the typed surface's v44
   coverage ceiling. The protocol surface is hand-maintained; a method or
-  wire-field change ships with a focused regression test in the same change.
+  wire-field change ships with a focused regression test in the same change,
+  extending the existing wire or codec test of that message before adding one.
 - The public ABI is tracked in `api/htsp.api` by Kotlin Gradle plugin ABI
   validation. `checkKotlinAbi` runs in `check`; after an intentional public API
   change, regenerate the dump with `./gradlew updateKotlinAbi` and never edit it

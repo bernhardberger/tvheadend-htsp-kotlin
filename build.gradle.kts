@@ -5,6 +5,7 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.DetektCreateBaselineTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -183,6 +184,21 @@ dependencies {
 detekt {
     config.setFrom("detekt.yml")
     source.setFrom("src/main/kotlin")
+}
+
+// Tests get their own small rule set; the baseline records existing findings.
+tasks.named<Detekt>("detektTest") {
+    config.setFrom("detekt-test.yml")
+    baseline.set(layout.projectDirectory.file("detekt-test-baseline.xml"))
+}
+
+tasks.named<DetektCreateBaselineTask>("detektBaselineTest") {
+    config.setFrom("detekt-test.yml")
+    baseline.set(layout.projectDirectory.file("detekt-test-baseline.xml"))
+}
+
+tasks.named("check") {
+    dependsOn("detektTest")
 }
 
 tasks.withType<JavaCompile>().configureEach {

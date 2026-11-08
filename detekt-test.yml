@@ -1,0 +1,21 @@
+# Test-source rules for detektTest. Production rules, including the KDoc rules
+# in detekt.yml, do not apply to tests. Existing findings are recorded in
+# detekt-test-baseline.xml so only new code fails.
+config:
+  validation: true
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    # Name a test after the unit or behavior it covers, not the review, slice
+    # or release step that produced it.
+    classPattern: '(?!.*(Review|Slice|Evidence|Acceptance|PreRelease))[A-Z][a-zA-Z0-9]*'
+
+style:
+  active: true
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - value: 'java.lang.Thread.sleep'
+        reason: 'Real-clock waits make tests slow and flaky. Use virtual time from kotlinx-coroutines-test or a fake.'

@@ -60,6 +60,16 @@ and coroutine-scope defects, package-boundary or dependency violations,
 attribution or release-boundary violations, secrets in errors or logs, and
 missing focused regression tests.
 
+Report test economy too, normally as non-blocking findings: tests that
+duplicate an existing case, change detectors (copied message text, call order
+or internal structure that is not the contract), assertions that would still
+pass with the logic removed, and copied fixture helpers; name the existing test
+or fixture to fold them into. Report real-clock waits (`Thread.sleep`, a real
+`delay` to let things settle, polling with a timeout) the same way, naming the
+virtual-time API (`runTest`, `advanceTimeBy`, `runCurrent`) or the signal
+(`CompletableDeferred`, `CountDownLatch`, listener) to use instead. Note when
+the test diff is far larger than the production change it covers.
+
 Report each finding with severity, confidence, repository-relative path and
 line, evidence and impact. Put uncertainty without evidence of a defect under
 questions or evidence gaps. Do not edit, run commands or review unrelated code.
