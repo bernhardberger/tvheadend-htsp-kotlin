@@ -68,6 +68,7 @@ internal open class `HtspService-internal`(
     private val metadataEventBufferCapacity: Int = eventBufferOptions.metadataQueueEvents,
     private val subscriptionEventBufferCapacity: Int = eventBufferOptions.subscriptionQueueEvents,
     private val nanoTime: () -> Long = System::nanoTime,
+    // The one clock for every request budget: typed caller, dispatch, admission, write and late-reply expiry.
     private val requestNanoTime: () -> Long = System::nanoTime,
     private val writeDeadlineDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val beforeWriteDeadlineRetirement: () -> Unit = {},
@@ -203,7 +204,7 @@ internal open class `HtspService-internal`(
         return latch.await()
     }
 
-    private val typedRequestCaller = HtspTypedRequestCaller(this)
+    private val typedRequestCaller = HtspTypedRequestCaller(this, requestNanoTime)
 
     private var liveServerFacts: HtspServerFacts? = null
 
@@ -1172,7 +1173,7 @@ internal open class `HtspService-internal`(
         fields: LinkedHashMap<String, Any?>,
         timeoutMs: Long,
     ): HtspWireReply {
-        val startedAtNanos = System.nanoTime()
+        val startedAtNanos = requestNanoTime()
         val serviceGeneration = generation.transportKey as? ServiceProtocolGeneration
             ?: throw CancellationException("Stale HTSP connection generation")
         attemptMonitor.withAttemptLock {
@@ -1181,7 +1182,7 @@ internal open class `HtspService-internal`(
             }
         }
         return try {
-            val remainingMs = timeoutMs - (System.nanoTime() - startedAtNanos) / 1_000_000L
+            val remainingMs = timeoutMs - (requestNanoTime() - startedAtNanos) / 1_000_000L
             if (remainingMs <= 0L) throw HtspCallTimeoutException()
             val reply = if (request is SubscribeRequest) {
                 requestForConnectionAttemptIf(

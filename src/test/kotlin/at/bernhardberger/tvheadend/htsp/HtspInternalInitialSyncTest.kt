@@ -240,7 +240,7 @@ internal class HtspInternalInitialSyncTest : HtspServiceLifecycleFixture() {
         }
     }
 
-    /** Drives the helper on virtual time that also serves as the service's progress clock. */
+    /** Drives the helper on virtual time that also serves as the service's progress and request clocks. */
     private inner class VirtualSync(
         idleTimeoutMs: Long,
         timeoutMs: Long? = null,
@@ -260,6 +260,8 @@ internal class HtspInternalInitialSyncTest : HtspServiceLifecycleFixture() {
         val service = service(
             beforeFrameRead = { turns.release() },
             nanoTime = { frozenNanoTime ?: (scheduler.currentTime * 1_000_000L) },
+            // Request budgets run on virtual time too, so real-thread speed cannot shorten the acknowledgement.
+            requestNanoTime = { scheduler.currentTime * 1_000_000L },
             ioDispatcher = signallingIo,
             afterPublicationCurrencyCheck = { published.incrementAndGet() },
         )

@@ -237,6 +237,7 @@ public interface HtspConnection {
 /** ABI-hidden owner of the preserved typed request primitive. */
 internal class `HtspTypedRequestCaller-internal`(
     private val transport: HtspRequestTransport,
+    private val nanoTime: () -> Long = System::nanoTime,
 ) {
     private val handshakeMutex = Mutex()
 
@@ -261,7 +262,7 @@ internal class `HtspTypedRequestCaller-internal`(
     ): HtspResult<R> {
         require(timeoutMs > 0L) { "timeoutMs must be positive" }
         currentCoroutineContext().ensureActive()
-        val startedAtNanos = System.nanoTime()
+        val startedAtNanos = nanoTime()
         val generation = transport.captureGeneration() ?: return HtspResult.TransportUnavailable
         if (expectedGeneration != null && generation.token !== expectedGeneration) {
             throw CancellationException("Stale HTSP connection generation")
@@ -275,7 +276,7 @@ internal class `HtspTypedRequestCaller-internal`(
         return if (request.isDirectHandshake()) {
             var acquired = false
             try {
-                val remainingMs = timeoutMs - (System.nanoTime() - startedAtNanos) / 1_000_000L
+                val remainingMs = timeoutMs - (nanoTime() - startedAtNanos) / 1_000_000L
                 val withinBudget = withTimeoutOrNull(remainingMs) {
                     handshakeMutex.lock()
                     acquired = true
@@ -306,7 +307,7 @@ internal class `HtspTypedRequestCaller-internal`(
         var replyReceived = false
         return try {
             val fields = HtspRequestCodecs.encode(request)
-            val remainingMs = timeoutMs - (System.nanoTime() - startedAtNanos) / 1_000_000L
+            val remainingMs = timeoutMs - (nanoTime() - startedAtNanos) / 1_000_000L
             if (remainingMs <= 0L) throw HtspCallTimeoutException()
             val reply = transport.dispatch(
                 generation = generation,
