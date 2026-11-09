@@ -13,7 +13,6 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -526,6 +525,7 @@ internal class HtspSpeedReplyIntegrationTest {
         private val lock = Any()
         private val serverSocket = ServerSocket(0, 1, InetAddress.getByName(LOOPBACK_HOST))
         private val tracesBySequence = mutableMapOf<Int, MutableSpeedTrace>()
+        private val changed = Channel<Unit>(Channel.CONFLATED)
         private var serverOrder = 0L
         @Volatile
         private var clientSocket: Socket? = null
@@ -565,20 +565,20 @@ internal class HtspSpeedReplyIntegrationTest {
         val port: Int = serverSocket.localPort
 
         suspend fun awaitTrace(speed: Int): SpeedTraceSnapshot? {
-            val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(EVENT_TIMEOUT_MS)
-            var snapshot: SpeedTraceSnapshot?
-            do {
-                snapshot = snapshot(speed)
-                if (
-                    snapshot?.replyOrder != null &&
-                    snapshot.speedEventOrder != null &&
-                    snapshot.timeshiftEventOrder != null
-                ) {
-                    return snapshot
+            withTimeoutOrNull(EVENT_TIMEOUT_MS) {
+                while (true) {
+                    val snapshot = snapshot(speed)
+                    if (
+                        snapshot?.replyOrder != null &&
+                        snapshot.speedEventOrder != null &&
+                        snapshot.timeshiftEventOrder != null
+                    ) {
+                        break
+                    }
+                    changed.receive()
                 }
-                delay(10L)
-            } while (System.nanoTime() < deadline)
-            return snapshot
+            }
+            return snapshot(speed)
         }
 
         private fun snapshot(speed: Int): SpeedTraceSnapshot? = synchronized(lock) {
@@ -662,6 +662,7 @@ internal class HtspSpeedReplyIntegrationTest {
             while (!closing) {
                 val frame = readFrame(input) ?: return
                 observer(HtspCodec.readMessage(ByteArrayInputStream(frame)))
+                changed.trySend(Unit)
                 output.write(frame)
                 output.flush()
             }

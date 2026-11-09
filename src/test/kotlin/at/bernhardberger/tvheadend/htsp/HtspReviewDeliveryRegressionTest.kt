@@ -354,7 +354,10 @@ internal class HtspReviewDeliveryRegressionTest : HtspServiceLifecycleFixture() 
             val written = CompletableDeferred<Unit>()
             val expiryStarted = CompletableDeferred<Unit>()
             val resumeExpiry = CompletableDeferred<Unit>()
+            // A positive start makes the saturated deadline overflow, as it does on a real clock.
+            val now = TimeUnit.DAYS.toNanos(30L)
             val service = service(
+                requestNanoTime = { now },
                 afterRequestFrameWritten = { if (it == "subscribe") written.complete(Unit) },
                 beforeLateReplyExpiry = { expiryStarted.complete(Unit); resumeExpiry.await() },
             )
@@ -371,7 +374,7 @@ internal class HtspReviewDeliveryRegressionTest : HtspServiceLifecycleFixture() 
                 val observer = observers.values.single()
                 val deadline = observer.javaClass.getDeclaredField("deadlineNanos").apply { isAccessible = true }.getLong(observer)
                 val expiry = observer.javaClass.getDeclaredField("expiry").apply { isAccessible = true }.get(observer) as Job
-                assertTrue(deadline - System.nanoTime() > TimeUnit.DAYS.toNanos(365L))
+                assertTrue(deadline - now > TimeUnit.DAYS.toNanos(365L))
                 resumeExpiry.complete(Unit)
                 assertNull(withTimeoutOrNull(100L) { expiry.join(); true }, "A distant deadline must not overflow the expiry delay")
                 service.disconnect()

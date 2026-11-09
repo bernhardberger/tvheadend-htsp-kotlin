@@ -4,7 +4,6 @@
   <CurrentIssues>
     <ID>ClassNaming:HtspPreReleaseSliceTest.kt:HtspPreReleaseSliceTest</ID>
     <ID>ClassNaming:HtspReviewDeliveryRegressionTest.kt:HtspReviewDeliveryRegressionTest : HtspServiceLifecycleFixture</ID>
-    <ID>ForbiddenMethodCall:HtspInternalInitialSyncTest.kt:HtspInternalInitialSyncTest.VirtualSync$sleep(1L)</ID>
-    <ID>ForbiddenMethodCall:HtspServiceLifecycleFixture.kt:HtspServiceLifecycleFixture.FakeHtspServer$sleep(1L)</ID>
+    <ID>ForbiddenMethodCall:HtspServiceLifecycleFixture.kt:HtspServiceLifecycleFixture$nanoTime</ID>
   </CurrentIssues>
 </SmellBaseline>

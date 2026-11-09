@@ -15,6 +15,7 @@ import java.net.Socket
 import java.nio.ByteBuffer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -119,6 +120,7 @@ internal abstract class HtspServiceLifecycleFixture {
         @Volatile
         private var postHandshakeRequest: HtspWireMessage? = null
         private val postHandshakeRequests = CopyOnWriteArrayList<HtspWireMessage>()
+        private val postHandshakeRequestPermits = Semaphore(0)
         val authenticateRequestReceived = CountDownLatch(1)
         val postHandshakeRequestReceived = CountDownLatch(1)
         /** Methods the client sent during the handshake, in order. */
@@ -164,6 +166,7 @@ internal abstract class HtspServiceLifecycleFixture {
                             postHandshakeReplyPlan.forEach { replyFields ->
                                 val request = HtspCodec.readMessage(client.getInputStream())
                                 postHandshakeRequests += request
+                                postHandshakeRequestPermits.release()
                                 if (postHandshakeRequest == null) postHandshakeRequest = request
                                 postHandshakeRequestReceived.countDown()
                                 replyFields?.let { replyToPostHandshakeRequest(request, it) }
@@ -171,6 +174,7 @@ internal abstract class HtspServiceLifecycleFixture {
                         } else if (captureOnePostHandshakeRequest) {
                             postHandshakeRequest = HtspCodec.readMessage(client.getInputStream())
                             postHandshakeRequests += checkNotNull(postHandshakeRequest)
+                            postHandshakeRequestPermits.release()
                             postHandshakeRequestReceived.countDown()
                             postHandshakeReplyFields?.let(::replyToCapturedPostHandshakeRequest)
                             additionalPostHandshakeReplyFields.forEach { replyFields ->
@@ -211,11 +215,9 @@ internal abstract class HtspServiceLifecycleFixture {
         }
 
         fun awaitPostHandshakeRequestCount(count: Int, timeoutMs: Long): Boolean {
-            val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs)
-            while (postHandshakeRequests.size < count && System.nanoTime() < deadline) {
-                Thread.sleep(1L)
-            }
-            return postHandshakeRequests.size >= count
+            if (!postHandshakeRequestPermits.tryAcquire(count, timeoutMs, TimeUnit.MILLISECONDS)) return false
+            postHandshakeRequestPermits.release(count)
+            return true
         }
 
         fun postHandshakeRequest(index: Int): HtspWireMessage = postHandshakeRequests[index]

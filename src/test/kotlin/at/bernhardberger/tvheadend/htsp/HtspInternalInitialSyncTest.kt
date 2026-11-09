@@ -6,9 +6,11 @@ import at.bernhardberger.tvheadend.htsp.messages.HtspInitialSyncCompletedMessage
 import at.bernhardberger.tvheadend.htsp.requests.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -20,9 +22,11 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class HtspInternalInitialSyncTest : HtspServiceLifecycleFixture() {
@@ -244,9 +248,19 @@ internal class HtspInternalInitialSyncTest : HtspServiceLifecycleFixture() {
     ) : AutoCloseable {
         val scheduler = TestCoroutineScheduler()
         private val published = AtomicInteger()
+        private val turns = Semaphore(0)
+
+        /** Signals after each IO task, whose completion may resume the helper on the test dispatcher. */
+        private val signallingIo = object : CoroutineDispatcher() {
+            override fun dispatch(context: CoroutineContext, block: Runnable) {
+                Dispatchers.IO.dispatch(context, Runnable { try { block.run() } finally { turns.release() } })
+            }
+        }
         val server = FakeHtspServer(respondToHello = true, captureOnePostHandshakeRequest = true)
         val service = service(
+            beforeFrameRead = { turns.release() },
             nanoTime = { frozenNanoTime ?: (scheduler.currentTime * 1_000_000L) },
+            ioDispatcher = signallingIo,
             afterPublicationCurrencyCheck = { published.incrementAndGet() },
         )
         private val scope = CoroutineScope(StandardTestDispatcher(scheduler))
@@ -300,11 +314,10 @@ internal class HtspInternalInitialSyncTest : HtspServiceLifecycleFixture() {
             return result.getCompleted()
         }
 
+        /** Rechecks [condition] after each reader frame and each IO task, the only real threads that queue its work. */
         private fun awaitReal(condition: () -> Boolean) {
-            val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
             while (!condition()) {
-                check(System.nanoTime() - deadline < 0L) { "Condition not reached" }
-                Thread.sleep(1L)
+                check(turns.tryAcquire(5, TimeUnit.SECONDS)) { "Condition not reached" }
             }
         }
 

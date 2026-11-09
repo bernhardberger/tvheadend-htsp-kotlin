@@ -19,3 +19,7 @@ style:
     methods:
       - value: 'java.lang.Thread.sleep'
         reason: 'Real-clock waits make tests slow and flaky. Use virtual time from kotlinx-coroutines-test or a fake.'
+      # Baselined: the System::nanoTime defaults of the service() fixture mirror
+      # HtspService's own real-clock defaults; they inject a clock, not a wait.
+      - value: 'java.lang.System.nanoTime'
+        reason: 'Real-clock deadlines make tests slow and flaky. Use virtual time or wait on a signal.'

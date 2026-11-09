@@ -37,9 +37,9 @@ official Tvheadend software or as wholly original work.
   `CompletableDeferred`, `CountDownLatch` or listener callback. No
   `Thread.sleep`, no real `delay` to let things settle, no polling loops; a
   timeout only bounds a hang while waiting for a signal. `detektTest`
-  (`detekt-test.yml`) rejects `Thread.sleep` and test classes named after
-  process steps such as Review, Slice or PreRelease; its baseline lists
-  existing findings, so do not add new ones to it.
+  (`detekt-test.yml`) rejects `Thread.sleep`, `System.nanoTime` and test
+  classes named after process steps such as Review, Slice or PreRelease; its
+  baseline lists existing findings, so do not add new ones to it.
 - Use Conventional Commit subjects (`feat(htsp):`, `fix:`, `docs:`, `chore:`),
   with `!` and a `BREAKING` changelog note for incompatible changes.
 - Non-trivial changes to the protocol surface, public API/ABI, concurrency, or
