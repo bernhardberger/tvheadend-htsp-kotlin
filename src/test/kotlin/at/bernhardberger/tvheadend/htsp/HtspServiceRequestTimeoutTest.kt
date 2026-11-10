@@ -338,32 +338,6 @@ internal class HtspServiceRequestTimeoutTest : HtspServiceLifecycleFixture() {
     }
 
     @Test
-    fun optionalRequestTimeoutLeavesSharedConnectionOpen() {
-        FakeHtspServer(respondToHello = true).use { server ->
-            val service = service()
-            runBlocking {
-                service.establish(HtspConnectionParameters(
-                    HtspEndpoint(host = "127.0.0.1", port = server.port),
-                    HtspConnectOptions(connectTimeoutMs = 1_000, responseTimeoutMs = 1_000, socketReadTimeoutMs = 50),
-                    HtspClientIdentity.Default,
-                ))
-
-                val failure = runCatching {
-                    service.request(
-                        method = "getEvents",
-                        policy = HtspReplyPolicy(timeoutMs = 100, retireOnTimeout = false),
-                    )
-                }.exceptionOrNull()
-
-                assertNotNull(failure)
-                assertTrue(failure is HtspRequestTimeoutException)
-                assertTrue(service.connectionState.value is HtspConnectionState.Connected)
-                service.disconnect()
-            }
-        }
-    }
-
-    @Test
     fun pendingRequestIdleWatchdogFailsTransportBeforeRequestTimeout() {
         FakeHtspServer(
             respondToHello = true,

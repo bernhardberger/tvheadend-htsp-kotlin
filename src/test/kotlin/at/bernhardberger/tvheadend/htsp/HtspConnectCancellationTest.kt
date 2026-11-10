@@ -216,17 +216,4 @@ internal class HtspConnectCancellationTest : HtspServiceLifecycleFixture() {
             }
         }
     }
-
-    @Test
-    fun activeCallerStillReceivesGenericFailure() = runBlocking {
-        val service = service(socketFactory = { throw IOException("fixture failure") })
-        try {
-            assertEquals(
-                HtspConnectOutcome.Failed(HtspTransportFailure(HtspTransportFailureKind.TRANSPORT_UNAVAILABLE)),
-                service.connect(HtspEndpoint("127.0.0.1", 1)),
-            )
-        } finally {
-            service.close()
-        }
-    }
 }

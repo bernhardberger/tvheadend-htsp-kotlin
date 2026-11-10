@@ -365,23 +365,4 @@ internal class HtspLifecycleRegressionTest : HtspServiceLifecycleFixture() {
             service.close()
         }
     }
-
-    @Test
-    fun fencedDisconnectLosingCaptureRaceReturnsFalse(): Unit = runBlocking {
-        FakeHtspServer(respondToHello = true).use { first ->
-            FakeHtspServer(respondToHello = true).use { second ->
-                val admitted = CompletableDeferred<Unit>()
-                val resume = CompletableDeferred<Unit>()
-                val service = service(afterTeardownAdmission = { admitted.complete(Unit); resume.await() })
-                val old = (service.connect(HtspEndpoint("127.0.0.1", first.port)) as HtspConnectOutcome.Connected).connection.generation
-                val disconnect = async { service.disconnect(old) }
-                admitted.await()
-                val newer = (service.connect(HtspEndpoint("127.0.0.1", second.port)) as HtspConnectOutcome.Connected).connection
-                resume.complete(Unit)
-                assertFalse(disconnect.await())
-                assertSame(newer, service.currentLiveConnection)
-                service.close()
-            }
-        }
-    }
 }

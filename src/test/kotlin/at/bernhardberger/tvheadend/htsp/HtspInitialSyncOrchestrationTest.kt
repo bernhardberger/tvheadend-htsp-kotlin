@@ -253,25 +253,29 @@ internal class HtspInitialSyncOrchestrationTest {
     }
 
     @Test
-    fun markerBeforeAcknowledgementWaitsForTheAcknowledgement() = runTest {
-        val generation = HtspConnectionGeneration()
-        val acknowledgement = CompletableDeferred<Unit>()
-        val markerSent = CompletableDeferred<Unit>()
-        val connection = ScriptedConnection(generation)
-        connection.executeScript = { _, _, _ ->
-            emitInitialSync(generation)
-            markerSent.complete(Unit)
-            acknowledgement.await()
-            HtspResult.Ok(HtspEmptyResponse)
-        }
-        val result = async(start = CoroutineStart.UNDISPATCHED) {
-            connection.enableAsyncMetadataAwaitingInitialSync()
-        }
+    fun markerBeforeAcknowledgementWaitsForItEvenWithLaterMalformedMetadata() = runTest {
+        listOf(false, true).forEach { malformedAfterMarker ->
+            val generation = HtspConnectionGeneration()
+            val acknowledgement = CompletableDeferred<Unit>()
+            val reportsSent = CompletableDeferred<Unit>()
+            val connection = ScriptedConnection(generation)
+            connection.executeScript = { _, _, _ ->
+                emitInitialSync(generation)
+                if (malformedAfterMarker) eventSource.emit(HtspTransportEvent.MalformedMetadata(generation, 3L))
+                reportsSent.complete(Unit)
+                acknowledgement.await()
+                HtspResult.Ok(HtspEmptyResponse)
+            }
+            val result = async(start = CoroutineStart.UNDISPATCHED) {
+                connection.enableAsyncMetadataAwaitingInitialSync()
+            }
 
-        markerSent.await()
-        assertFalse(result.isCompleted)
-        acknowledgement.complete(Unit)
-        assertEquals(HtspResult.Ok(Unit), result.await())
+            reportsSent.await()
+            assertFalse(result.isCompleted, "malformedAfterMarker=$malformedAfterMarker")
+            acknowledgement.complete(Unit)
+            assertEquals(HtspResult.Ok(Unit), result.await(), "malformedAfterMarker=$malformedAfterMarker")
+            assertEquals(0, connection.eventSource.subscriptionCount.value, "malformedAfterMarker=$malformedAfterMarker")
+        }
     }
 
     @Test
@@ -313,30 +317,6 @@ internal class HtspInitialSyncOrchestrationTest {
         assertFalse(result.isCompleted)
         connection.emitInitialSync(generation)
 
-        assertEquals(HtspResult.Ok(Unit), result.await())
-        assertEquals(0, connection.eventSource.subscriptionCount.value)
-    }
-
-    @Test
-    fun malformedMetadataAfterMarkerDoesNotInvalidateSyncWhileAcknowledgementIsPending() = runTest {
-        val generation = HtspConnectionGeneration()
-        val connection = ScriptedConnection(generation)
-        val reportsSent = CompletableDeferred<Unit>()
-        val acknowledgement = CompletableDeferred<Unit>()
-        connection.executeScript = { _, _, _ ->
-            emitInitialSync(generation)
-            eventSource.emit(HtspTransportEvent.MalformedMetadata(generation, 3L))
-            reportsSent.complete(Unit)
-            acknowledgement.await()
-            HtspResult.Ok(HtspEmptyResponse)
-        }
-        val result = async(start = CoroutineStart.UNDISPATCHED) {
-            connection.enableAsyncMetadataAwaitingInitialSync()
-        }
-
-        reportsSent.await()
-        assertFalse(result.isCompleted)
-        acknowledgement.complete(Unit)
         assertEquals(HtspResult.Ok(Unit), result.await())
         assertEquals(0, connection.eventSource.subscriptionCount.value)
     }

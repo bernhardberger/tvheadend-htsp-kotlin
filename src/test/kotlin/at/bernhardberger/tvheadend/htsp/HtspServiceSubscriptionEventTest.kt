@@ -776,12 +776,13 @@ internal class HtspServiceSubscriptionEventTest : HtspServiceLifecycleFixture() 
     }
 
     @Test
-    fun malformedSubscribeEnvelopesKeepTheStreamOpenEvenWithErrorText() {
+    fun malformedSubscribeRepliesKeepTheStreamOpenEvenWithErrorText() {
         val malformed = listOf(
             mapOf("noaccess" to "1"),
             mapOf("noaccess" to "1", "error" to "text"),
             mapOf("noaccess" to 2L, "error" to "Method not found"),
             mapOf("error" to 1L),
+            mapOf("90khz" to "yes"),
         )
         malformed.forEach { replyFields ->
             assertMalformedSubscribeKeepsStreamOpen(replyFields)
@@ -804,35 +805,6 @@ internal class HtspServiceSubscriptionEventTest : HtspServiceLifecycleFixture() 
                 }
                 assertTrue(server.postHandshakeRequestReceived.await(1, TimeUnit.SECONDS))
                 server.replyToCapturedPostHandshakeRequest(replyFields)
-                assertEquals(HtspResult.MalformedReply, withTimeout(1_000L) { subscribe.await() })
-
-                server.sendServerMessage(
-                    "subscriptionStart",
-                    mapOf("subscriptionId" to 23L, "streams" to emptyList<Map<String, Any?>>()),
-                )
-                assertTrue(withTimeout(1_000L) { events.await() }.single() is HtspSubscriptionEvent.Started)
-                service.disconnect()
-            }
-        }
-    }
-
-    @Test
-    fun locallyMalformedSubscribeReplyKeepsTheStreamOpen() {
-        FakeHtspServer(
-            respondToHello = true,
-            captureOnePostHandshakeRequest = true,
-        ).use { server ->
-            val service = service()
-            runBlocking {
-                service.connect(HtspEndpoint("127.0.0.1", server.port))
-                val events = async(start = CoroutineStart.UNDISPATCHED) {
-                    service.subscriptionEvents(23L).take(1).toList()
-                }
-                val subscribe = async(Dispatchers.IO) {
-                    service.subscribe(subscriptionId = 23L, channelId = 1L)
-                }
-                assertTrue(server.postHandshakeRequestReceived.await(1, TimeUnit.SECONDS))
-                server.replyToCapturedPostHandshakeRequest(mapOf("90khz" to "yes"))
                 assertEquals(HtspResult.MalformedReply, withTimeout(1_000L) { subscribe.await() })
 
                 server.sendServerMessage(

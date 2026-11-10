@@ -504,83 +504,44 @@ internal class HtspServiceDirectHandshakeTest : HtspServiceLifecycleFixture() {
     }
 
     @Test
-    fun directHelloDoesNotCancelAnUnrelatedInFlightRequest() {
-        FakeHtspServer(
-            respondToHello = true,
-            captureOnePostHandshakeRequest = true,
-            additionalPostHandshakeReplyFields = listOf(
-                mapOf(
-                    "htspversion" to 44L,
-                    "challenge" to ByteArray(32),
-                ),
-            ),
-        ).use { server ->
-            val service = service()
-            runBlocking {
-                service.establish(HtspConnectionParameters(
-                    HtspEndpoint(host = "127.0.0.1", port = server.port),
-                    HtspConnectOptions(connectTimeoutMs = 1_000, responseTimeoutMs = 1_000, socketReadTimeoutMs = 50),
-                    HtspClientIdentity.Default,
-                ))
-                val generation = requireNotNull(service.currentLiveConnection).generation
-                val ordinary = async(Dispatchers.IO) {
-                    service.getProfiles(timeoutMs = 5_000L, expectedGeneration = generation)
+    fun directHelloAndAuthenticateDoNotCancelAnUnrelatedInFlightRequest() {
+        val directHello: suspend HtspService.(HtspConnectionGeneration) -> HtspResult<*> =
+            { generation -> hello(43L, "parallel-client", 1_000L, generation) }
+        val directAuthenticate: suspend HtspService.(HtspConnectionGeneration) -> HtspResult<*> =
+            { generation -> authenticate(timeoutMs = 1_000L, expectedGeneration = generation) }
+        listOf(
+            Triple("hello", mapOf("htspversion" to 44L, "challenge" to ByteArray(32)), directHello),
+            Triple("authenticate", mapOf("admin" to 0L, "streaming" to 1L, "dvr" to 1L), directAuthenticate),
+        ).forEach { (name, directReplyFields, direct) ->
+            FakeHtspServer(
+                respondToHello = true,
+                captureOnePostHandshakeRequest = true,
+                additionalPostHandshakeReplyFields = listOf(directReplyFields),
+            ).use { server ->
+                val service = service()
+                runBlocking {
+                    service.establish(HtspConnectionParameters(
+                        HtspEndpoint(host = "127.0.0.1", port = server.port),
+                        HtspConnectOptions(connectTimeoutMs = 1_000, responseTimeoutMs = 1_000, socketReadTimeoutMs = 50),
+                        HtspClientIdentity.Default,
+                    ))
+                    val generation = requireNotNull(service.currentLiveConnection).generation
+                    val ordinary = async(Dispatchers.IO) {
+                        service.getProfiles(timeoutMs = 5_000L, expectedGeneration = generation)
+                    }
+                    assertTrue(server.postHandshakeRequestReceived.await(1, TimeUnit.SECONDS), name)
+
+                    assertTrue(service.direct(generation) is HtspResult.Ok, name)
+                    assertTrue(!ordinary.isCompleted, name)
+                    server.replyToCapturedPostHandshakeRequest()
+                    assertEquals(
+                        HtspResult.Ok(GetProfilesResponse(null)),
+                        withTimeout(1_000L) { ordinary.await() },
+                        name,
+                    )
+                    assertSame(generation, service.currentLiveConnection?.generation, name)
+                    service.disconnect()
                 }
-                assertTrue(server.postHandshakeRequestReceived.await(1, TimeUnit.SECONDS))
-
-                assertTrue(
-                    service.hello(43L, "parallel-client", 1_000L, generation) is HtspResult.Ok,
-                )
-                assertTrue(!ordinary.isCompleted)
-                server.replyToCapturedPostHandshakeRequest()
-                assertEquals(
-                    HtspResult.Ok(GetProfilesResponse(null)),
-                    withTimeout(1_000L) { ordinary.await() },
-                )
-                assertSame(generation, service.currentLiveConnection?.generation)
-                service.disconnect()
-            }
-        }
-    }
-
-    @Test
-    fun directAuthenticateDoesNotCancelAnUnrelatedInFlightRequest() {
-        FakeHtspServer(
-            respondToHello = true,
-            captureOnePostHandshakeRequest = true,
-            additionalPostHandshakeReplyFields = listOf(
-                mapOf(
-                    "admin" to 0L,
-                    "streaming" to 1L,
-                    "dvr" to 1L,
-                ),
-            ),
-        ).use { server ->
-            val service = service()
-            runBlocking {
-                service.establish(HtspConnectionParameters(
-                    HtspEndpoint(host = "127.0.0.1", port = server.port),
-                    HtspConnectOptions(connectTimeoutMs = 1_000, responseTimeoutMs = 1_000, socketReadTimeoutMs = 50),
-                    HtspClientIdentity.Default,
-                ))
-                val generation = requireNotNull(service.currentLiveConnection).generation
-                val ordinary = async(Dispatchers.IO) {
-                    service.getProfiles(timeoutMs = 5_000L, expectedGeneration = generation)
-                }
-                assertTrue(server.postHandshakeRequestReceived.await(1, TimeUnit.SECONDS))
-
-                assertTrue(
-                    service.authenticate(timeoutMs = 1_000L, expectedGeneration = generation) is
-                        HtspResult.Ok,
-                )
-                assertTrue(!ordinary.isCompleted)
-                server.replyToCapturedPostHandshakeRequest()
-                assertEquals(
-                    HtspResult.Ok(GetProfilesResponse(null)),
-                    withTimeout(1_000L) { ordinary.await() },
-                )
-                assertSame(generation, service.currentLiveConnection?.generation)
-                service.disconnect()
             }
         }
     }

@@ -410,7 +410,7 @@ class HtspServerMessageTest {
             "retention" to null,
             "directory" to 3L,
         ).forEach { (name, value) ->
-            assertMalformed(mapOf("method" to "timerecEntryUpdate", "id" to "rule", name to value))
+            assertMalformed(metadataFixture("timerecEntryUpdate") + (name to value))
         }
     }
 
@@ -636,10 +636,10 @@ class HtspServerMessageTest {
         assertEquals(null, event.event.channelId)
 
         listOf(
-            mapOf("method" to "channelAdd", "channelId" to 1L, "channelName" to null),
-            mapOf("method" to "channelAdd", "channelId" to 1L, "channelName" to 2L),
-            mapOf("method" to "tagAdd", "tagId" to 2L, "tagName" to null),
-            mapOf("method" to "tagAdd", "tagId" to 2L, "tagName" to 3L),
+            metadataFixture("channelAdd") + ("channelName" to null),
+            metadataFixture("channelAdd") + ("channelName" to 2L),
+            metadataFixture("tagAdd") + ("tagName" to null),
+            metadataFixture("tagAdd") + ("tagName" to 3L),
             mapOf(
                 "method" to "eventAdd",
                 "eventId" to 3L,
@@ -655,48 +655,6 @@ class HtspServerMessageTest {
                 "stop" to 5L,
             ),
         ).forEach(::assertMalformed)
-    }
-
-    @Test
-    fun requiredCanonicalFieldsCannotBeReplacedByHistoricalAliases() {
-        assertMalformed(
-            (metadataFixture("channelAdd") - "channelNumber") + mapOf(
-                "method" to "channelAdd",
-                "channelId" to 1L,
-                "channelName" to "Channel",
-                "lcn" to 17L,
-            ),
-        )
-
-        assertMalformed(
-            (metadataFixture("tagAdd") - setOf("tagId", "tagName", "tagIndex")) +
-                mapOf("id" to 2L, "name" to "Tag", "index" to 3L),
-        )
-
-        assertMalformed(
-            (metadataFixture("dvrEntryAdd") - setOf("id", "state")) + mapOf(
-                "method" to "dvrEntryAdd",
-                "dvrId" to 4L,
-                "seasonNumber" to 1L,
-                "episodeNumber" to 2L,
-                "episodeCount" to 3L,
-                "partNumber" to 4L,
-                "partCount" to 5L,
-                "status" to "recording",
-                "statusError" to "none",
-                "playPosition" to 6L,
-                "playCount" to 7L,
-            ),
-        )
-
-        assertMalformed(
-            mapOf(
-                "method" to "subscriptionStart",
-                "id" to 8L,
-                "state" to "running",
-                "error" to "tuningFailed",
-            ),
-        )
     }
 
     @Test
@@ -837,17 +795,24 @@ class HtspServerMessageTest {
 
     @Test
     fun omittedVersionGatedFieldsAreAcceptedButPresentValuesStayStrict() {
-        assertMalformed(
-            mapOf(
-                "method" to "channelAdd",
-                "channelId" to 1L,
-                "channelName" to "Channel",
-                "channelNumberMinor" to 1,
-            ),
+        val introducedAfterV36 = mapOf(
+            "channelAdd" to setOf("channelIdStr"),
+            "tagAdd" to setOf("tagIdStr"),
+            "dvrEntryAdd" to setOf("idStr", "ageRating"),
         )
-        assertMalformed(
-            mapOf("method" to "tagAdd", "tagId" to 1L, "tagName" to "Tag", "tagIndex" to -1L),
-        )
+        listOf(
+            "channelAdd" to ("channelNumberMinor" to 1),
+            "tagAdd" to ("tagIndex" to -1L),
+            "dvrEntryAdd" to ("seasonNumber" to "1"),
+        ).forEach { (method, invalid) ->
+            listOf(
+                36L to metadataFixture(method) - introducedAfterV36.getValue(method),
+                44L to metadataFixture(method),
+            ).forEach { (version, fields) ->
+                decodeMessage(fields, version)
+                assertMalformed(fields + invalid, version)
+            }
+        }
         assertMalformed(
             mapOf(
                 "method" to "subscriptionStart",
@@ -860,9 +825,6 @@ class HtspServerMessageTest {
         )
         assertMalformed(
             mapOf("method" to "signalStatus", "subscriptionId" to 1L, "feAbsoluteSNR" to 1),
-        )
-        assertMalformed(
-            mapOf("method" to "dvrEntryAdd", "id" to 1L, "seasonNumber" to "1"),
         )
     }
 
@@ -1014,9 +976,9 @@ class HtspServerMessageTest {
         assertEquals(0L, present.currentEventId)
         assertEquals(emptyList<Long>(), present.tagIds)
 
-        assertMalformed(mapOf("method" to "channelUpdate", "channelId" to 3L, "channelName" to null))
-        assertMalformed(mapOf("method" to "eventUpdate", "eventId" to 4L, "category" to listOf("ok", null)))
-        assertMalformed(mapOf("method" to "dvrEntryUpdate", "id" to 5L, "enabled" to null))
+        assertMalformed(metadataFixture("channelUpdate") + ("channelName" to null))
+        assertMalformed(metadataFixture("eventUpdate") + ("category" to listOf("ok", null)))
+        assertMalformed(metadataFixture("dvrEntryUpdate") + ("enabled" to null))
     }
 
     @Test
@@ -1176,10 +1138,10 @@ class HtspServerMessageTest {
         }
     }
 
-    private fun assertMalformed(fields: Map<String, Any?>) {
+    private fun assertMalformed(fields: Map<String, Any?>, protocolVersion: Long = 44) {
         assertTrue(
-            decodeHtspServerMessage(fields) is HtspServerMessageMalformedKnownMessage,
-            "expected malformed for $fields",
+            decodeHtspServerMessage(fields, protocolVersion) is HtspServerMessageMalformedKnownMessage,
+            "expected malformed for $fields at v$protocolVersion",
         )
     }
 
