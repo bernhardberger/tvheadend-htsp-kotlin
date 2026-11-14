@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0-rc.2] - 2026-11-14
+
+Second release candidate of the 1.0 line. It fixes one connection-teardown race.
+The public API is unchanged from `1.0.0-rc.1`, so upgrading needs no source
+changes. Like every pre-release it makes no compatibility promise toward later
+pre-releases or `1.0.0`; see
+[`docs/versioning.md`](https://github.com/bernhardberger/tvheadend-htsp-kotlin/blob/v1.0.0-rc.2/docs/versioning.md).
+
+- A request that timed out or was cancelled at the same moment as a disconnect,
+  close, reconnect or transport failure could make that teardown throw
+  `NoSuchElementException` and leave the socket open. Teardown now always
+  completes and closes the transport. The race was found while checking this
+  library against fixes that
+  [TVHStream](https://github.com/Preclikos/tvhstream) made to its own HTSP
+  client for the same class of bug.
+
 ## [1.0.0-rc.1] - 2026-10-24
 
 First release candidate of the 1.0 line. It settles the last public API names
