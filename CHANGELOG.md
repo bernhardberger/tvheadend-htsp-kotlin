@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+- Decode typed programme artwork from HTSP v45
+  ([tvheadend/tvheadend#2343](https://github.com/tvheadend/tvheadend/pull/2343),
+  not yet merged upstream): `imagePoster`, `imageBackdrop` and `imageStill` on
+  `HtspEvent`, `HtspDvrEntry` and `HtspEpgBroadcastObject`. An empty string means
+  the server has no such image; null means the field was absent. Full event and
+  DVR messages expose the artwork through their shared entities; statistics-only
+  DVR updates remain unchanged.
+- Request HTSP v45 by default; older servers still negotiate down. Pass
+  `requestedProtocolVersion = 44` to keep the previous request.
+- Preserve the `1.0.0-rc.1` constructor and `copy` signatures of the three
+  evolving records, including default-argument bridges. Existing compiled
+  callers keep linking, and their `copy` calls retain the new artwork fields.
+- Redact `HtspEpgBroadcastObject` string rendering, including through response
+  wrappers, so programme artwork references are not logged. Shared event and DVR
+  entities already redact their contents.
+- Release waits for upstream #2343 to merge and its final protocol details to
+  be reconciled; the merged-upstream protocol pin stays at v44.
+
 ## [1.0.0-rc.1] - 2026-10-24
 
 First release candidate of the 1.0 line. It settles the last public API names
