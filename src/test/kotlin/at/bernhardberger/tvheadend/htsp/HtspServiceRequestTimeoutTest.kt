@@ -313,9 +313,11 @@ internal class HtspServiceRequestTimeoutTest : HtspServiceLifecycleFixture() {
         FakeHtspServer(respondToHello = true).use { server ->
             val service = service()
             runBlocking {
+                // The read timeout far exceeds the bound below: teardown must close the socket
+                // to wake the blocked reader instead of waiting for its next timeout.
                 service.establish(HtspConnectionParameters(
                     HtspEndpoint(host = "127.0.0.1", port = server.port),
-                    HtspConnectOptions(connectTimeoutMs = 1_000, responseTimeoutMs = 1_000, socketReadTimeoutMs = 50),
+                    HtspConnectOptions(connectTimeoutMs = 1_000, responseTimeoutMs = 1_000, socketReadTimeoutMs = 60_000),
                     HtspClientIdentity.Default,
                 ))
             }

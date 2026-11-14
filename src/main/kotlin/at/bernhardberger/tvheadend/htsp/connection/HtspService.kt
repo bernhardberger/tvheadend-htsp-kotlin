@@ -759,7 +759,9 @@ internal open class `HtspService-internal`(
             if (frameComplete.get() && remainingMs() > 0L) {
                 preserveLateReplyObserver(s, admission.socket, startedAtNanos + TimeUnit.MILLISECONDS.toNanos(timeoutMs))
             } else {
-                pending.remove(s)
+                // Retirement snapshots pending under the attempt lock; an unlocked removal can
+                // empty the map between that snapshot's size check and its read.
+                attemptMonitor.withAttemptLock { pending.remove(s) }
             }
             throw t
         }
