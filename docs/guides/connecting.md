@@ -66,7 +66,7 @@ cancelled.
 ### What the handshake does
 
 1. The client sends `hello` with the version it asks for. The default
-   `requestedProtocolVersion` is 44, the newest version the typed API covers.
+   `requestedProtocolVersion` is 45, the newest version the typed API covers.
    The negotiated version is the lower of that and the server's.
 2. A server that reports a version below 36 is rejected here, before any
    credentials are sent, with `UNSUPPORTED_SERVER_VERSION`.
@@ -109,7 +109,7 @@ fun describeServer(live: HtspLiveConnection): String {
 | `responseTimeoutMs` | 5 000 | the `hello` and `authenticate` replies, and the silence check described [below](#what-ends-a-connection) |
 | `socketReadTimeoutMs` | 60 000 | the socket read timeout |
 | `socketBufferBytes` | 65 536 | the read and write buffer sizes |
-| `requestedProtocolVersion` | 44 | the version asked for, from 36 upward |
+| `requestedProtocolVersion` | 45 | the version asked for, from 36 upward |
 | `forceReconnect` | false | whether a live connection is replaced; see below |
 
 ### Failed connects

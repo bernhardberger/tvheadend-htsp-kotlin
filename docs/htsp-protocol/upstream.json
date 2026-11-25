@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/tvheadend/tvheadend",
-  "revision": "51ec612fa22c4c78b4697e4c262c943da9cbd6cc",
-  "htspProtoVersion": 44,
+  "revision": "08d1cfbd5619f4230bd404d9a591923be892a83b",
+  "htspProtoVersion": 45,
   "files": {
     "src/htsp_server.c": {
-      "gitBlobSha1": "4efa3fdcf01d7cce96f4f075ab6405e0ca1fa043",
-      "bytes": 135375
+      "gitBlobSha1": "876c7e45198b6cacc4796a381050dacc44c393da",
+      "bytes": 135446
     },
     "src/htsp_server.h": {
       "gitBlobSha1": "3b6470d51ab45e1d9bc9bacc710b0e1f6f49b1b0",
@@ -38,8 +38,8 @@
       "bytes": 4655
     },
     "src/api.c": {
-      "gitBlobSha1": "d86fbda01312b97c451242ee24c01a384744141b",
-      "bytes": 4440
+      "gitBlobSha1": "f4b0f4db16b5b1f95b095f2e89c84dff1eac5e85",
+      "bytes": 5099
     },
     "src/api/api_idnode.c": {
       "gitBlobSha1": "bf2a65e8258f9496b5230f6db677af0fd89ded76",

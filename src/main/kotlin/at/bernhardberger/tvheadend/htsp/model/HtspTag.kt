@@ -18,7 +18,7 @@ public data class HtspTag private constructor(
     public val tagIcon: String?,
     /** Unsigned titled-icon flag, always emitted (:947). */
     public val tagTitledIcon: Long,
-    /** Wire `members`: null means not included; empty means no members (:936,949–953,1708–1718). */
+    /** Wire `members`: null means not included; empty means no members (:936,949–953,1710–1720). */
     public val channelIds: List<Long>?,
     private val immutableSnapshot: Unit,
 ) {

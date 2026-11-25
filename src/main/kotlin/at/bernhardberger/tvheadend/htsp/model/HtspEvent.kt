@@ -3,7 +3,7 @@ package at.bernhardberger.tvheadend.htsp.model
 import at.bernhardberger.tvheadend.htsp.wire.immutableSnapshot
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full event snapshot (pinned htsp_server.c:1316–1456); nullable fields are not set. */
+/** Full event snapshot (pinned htsp_server.c:1316–1458); nullable fields are not set. */
 @ConsistentCopyVisibility
 public data class HtspEvent private constructor(
     /** Unsigned event identity (:1337). */
@@ -50,31 +50,185 @@ public data class HtspEvent private constructor(
     public val firstAiredEpochSeconds: Long? = null,
     /** HTSP `isNew`: optional new-broadcast flag (pinned htsp_server.c:1435). */
     public val isNew: Boolean? = null,
-    /** Season ordinal when set (:712–728,1436–1437). */
+    /** Season ordinal when set (:712–728,1438–1439). */
     public val seasonNumber: Long? = null,
-    /** Season total when set (:712–728,1436–1437). */
+    /** Season total when set (:712–728,1438–1439). */
     public val seasonCount: Long? = null,
-    /** Episode ordinal when set (:712–728,1436–1437). */
+    /** Episode ordinal when set (:712–728,1438–1439). */
     public val episodeNumber: Long? = null,
-    /** Episode total when set (:712–728,1436–1437). */
+    /** Episode total when set (:712–728,1438–1439). */
     public val episodeCount: Long? = null,
-    /** Part ordinal when set (:712–728,1436–1437). */
+    /** Part ordinal when set (:712–728,1438–1439). */
     public val partNumber: Long? = null,
-    /** Part total when set (:712–728,1436–1437). */
+    /** Part total when set (:712–728,1438–1439). */
     public val partCount: Long? = null,
-    /** Episode display text when set (:712–728,1436–1437). */
+    /** Episode display text when set (:712–728,1438–1439). */
     public val episodeOnscreen: String? = null,
-    /** Image URI when nonempty (:1438–1440). */
+    /** Image URI when nonempty (:1440–1442). */
     public val image: String? = null,
-    /** Accessible recording identity when linked (:1442–1451). */
+    /** Accessible recording identity when linked (:1444–1453). */
     public val dvrId: Long? = null,
-    /** Following event identity when available (:1453–1454). */
+    /** Following event identity when available (:1455–1456). */
     public val nextEventId: Long? = null,
     /** Programme credits, HTSP `credits` (src/htsp_server.c:1371–1372). */
     public val credits: HtspProgrammeCredits? = null,
+    /**
+     * HTSP `isRepeat`: optional repeat-broadcast flag, sent next to [isNew] from HTSP 45 regardless of the
+     * negotiated version (pinned htsp_server.c:1436–1437). Older servers never send it. Null means not flagged,
+     * and a null or false [isNew] does not mean a repeat.
+     */
+    public val isRepeat: Boolean? = null,
     private val immutableSnapshot: Unit,
 ) {
     /** Constructs a validated full event with immutable text lists. */
+    public constructor(
+        eventId: Long,
+        channelId: Long? = null,
+        startEpochSeconds: Long,
+        stopEpochSeconds: Long,
+        title: String? = null,
+        subtitle: String? = null,
+        summary: String? = null,
+        description: String? = null,
+        categories: List<String>? = null,
+        keywords: List<String>? = null,
+        seriesLinkUri: String? = null,
+        episodeUri: String? = null,
+        contentType: Long? = null,
+        ageRating: Long? = null,
+        ratingLabel: String? = null,
+        ratingIcon: String? = null,
+        ratingAuthority: String? = null,
+        ratingCountry: String? = null,
+        starRating: Long? = null,
+        copyrightYear: Long? = null,
+        firstAiredEpochSeconds: Long? = null,
+        isNew: Boolean? = null,
+        seasonNumber: Long? = null,
+        seasonCount: Long? = null,
+        episodeNumber: Long? = null,
+        episodeCount: Long? = null,
+        partNumber: Long? = null,
+        partCount: Long? = null,
+        episodeOnscreen: String? = null,
+        image: String? = null,
+        dvrId: Long? = null,
+        nextEventId: Long? = null,
+        credits: HtspProgrammeCredits? = null,
+        isRepeat: Boolean? = null,
+    ) : this(
+        eventId = eventId,
+        channelId = channelId,
+        startEpochSeconds = startEpochSeconds,
+        stopEpochSeconds = stopEpochSeconds,
+        title = title,
+        subtitle = subtitle,
+        summary = summary,
+        description = description,
+        categories = categories?.immutableSnapshot(),
+        keywords = keywords?.immutableSnapshot(),
+        seriesLinkUri = seriesLinkUri,
+        episodeUri = episodeUri,
+        contentType = contentType,
+        ageRating = ageRating,
+        ratingLabel = ratingLabel,
+        ratingIcon = ratingIcon,
+        ratingAuthority = ratingAuthority,
+        ratingCountry = ratingCountry,
+        starRating = starRating,
+        copyrightYear = copyrightYear,
+        firstAiredEpochSeconds = firstAiredEpochSeconds,
+        isNew = isNew,
+        seasonNumber = seasonNumber,
+        seasonCount = seasonCount,
+        episodeNumber = episodeNumber,
+        episodeCount = episodeCount,
+        partNumber = partNumber,
+        partCount = partCount,
+        episodeOnscreen = episodeOnscreen,
+        image = image,
+        dvrId = dvrId,
+        nextEventId = nextEventId,
+        credits = credits,
+        isRepeat = isRepeat,
+        immutableSnapshot = Unit,
+    )
+
+    /** Returns a validated copy with immutable snapshots of replacement collections. */
+    public fun copy(
+        eventId: Long = this.eventId,
+        channelId: Long? = this.channelId,
+        startEpochSeconds: Long = this.startEpochSeconds,
+        stopEpochSeconds: Long = this.stopEpochSeconds,
+        title: String? = this.title,
+        subtitle: String? = this.subtitle,
+        summary: String? = this.summary,
+        description: String? = this.description,
+        categories: List<String>? = this.categories,
+        keywords: List<String>? = this.keywords,
+        seriesLinkUri: String? = this.seriesLinkUri,
+        episodeUri: String? = this.episodeUri,
+        contentType: Long? = this.contentType,
+        ageRating: Long? = this.ageRating,
+        ratingLabel: String? = this.ratingLabel,
+        ratingIcon: String? = this.ratingIcon,
+        ratingAuthority: String? = this.ratingAuthority,
+        ratingCountry: String? = this.ratingCountry,
+        starRating: Long? = this.starRating,
+        copyrightYear: Long? = this.copyrightYear,
+        firstAiredEpochSeconds: Long? = this.firstAiredEpochSeconds,
+        isNew: Boolean? = this.isNew,
+        seasonNumber: Long? = this.seasonNumber,
+        seasonCount: Long? = this.seasonCount,
+        episodeNumber: Long? = this.episodeNumber,
+        episodeCount: Long? = this.episodeCount,
+        partNumber: Long? = this.partNumber,
+        partCount: Long? = this.partCount,
+        episodeOnscreen: String? = this.episodeOnscreen,
+        image: String? = this.image,
+        dvrId: Long? = this.dvrId,
+        nextEventId: Long? = this.nextEventId,
+        credits: HtspProgrammeCredits? = this.credits,
+        isRepeat: Boolean? = this.isRepeat,
+    ): HtspEvent = HtspEvent(
+        eventId = eventId,
+        channelId = channelId,
+        startEpochSeconds = startEpochSeconds,
+        stopEpochSeconds = stopEpochSeconds,
+        title = title,
+        subtitle = subtitle,
+        summary = summary,
+        description = description,
+        categories = categories,
+        keywords = keywords,
+        seriesLinkUri = seriesLinkUri,
+        episodeUri = episodeUri,
+        contentType = contentType,
+        ageRating = ageRating,
+        ratingLabel = ratingLabel,
+        ratingIcon = ratingIcon,
+        ratingAuthority = ratingAuthority,
+        ratingCountry = ratingCountry,
+        starRating = starRating,
+        copyrightYear = copyrightYear,
+        firstAiredEpochSeconds = firstAiredEpochSeconds,
+        isNew = isNew,
+        seasonNumber = seasonNumber,
+        seasonCount = seasonCount,
+        episodeNumber = episodeNumber,
+        episodeCount = episodeCount,
+        partNumber = partNumber,
+        partCount = partCount,
+        episodeOnscreen = episodeOnscreen,
+        image = image,
+        dvrId = dvrId,
+        nextEventId = nextEventId,
+        credits = credits,
+        isRepeat = isRepeat,
+    )
+
+    /** Links constructors compiled against rc.2, defaulting the repeat flag to absent. */
+    @Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
     public constructor(
         eventId: Long,
         channelId: Long? = null,
@@ -118,8 +272,8 @@ public data class HtspEvent private constructor(
         subtitle = subtitle,
         summary = summary,
         description = description,
-        categories = categories?.immutableSnapshot(),
-        keywords = keywords?.immutableSnapshot(),
+        categories = categories,
+        keywords = keywords,
         seriesLinkUri = seriesLinkUri,
         episodeUri = episodeUri,
         contentType = contentType,
@@ -143,10 +297,11 @@ public data class HtspEvent private constructor(
         dvrId = dvrId,
         nextEventId = nextEventId,
         credits = credits,
-        immutableSnapshot = Unit,
+        isRepeat = null,
     )
 
-    /** Returns a validated copy with immutable snapshots of replacement collections. */
+    /** Keeps the rc.2 copy ABI while retaining this record's repeat flag. */
+    @Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
     public fun copy(
         eventId: Long = this.eventId,
         channelId: Long? = this.channelId,
@@ -181,7 +336,7 @@ public data class HtspEvent private constructor(
         dvrId: Long? = this.dvrId,
         nextEventId: Long? = this.nextEventId,
         credits: HtspProgrammeCredits? = this.credits,
-    ): HtspEvent = HtspEvent(
+    ): HtspEvent = copy(
         eventId = eventId,
         channelId = channelId,
         startEpochSeconds = startEpochSeconds,
@@ -215,6 +370,7 @@ public data class HtspEvent private constructor(
         dvrId = dvrId,
         nextEventId = nextEventId,
         credits = credits,
+        isRepeat = this.isRepeat,
     )
 
     override fun toString(): String = "HtspEvent(<redacted>)"

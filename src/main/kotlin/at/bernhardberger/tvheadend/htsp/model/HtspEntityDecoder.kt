@@ -65,6 +65,7 @@ internal class `HtspEntityDecoder-internal`(
             episodeOnscreen = optionalString("episodeOnscreen"),
             image = optionalString("image"), dvrId = optionalU32("dvrId"), nextEventId = optionalU32("nextEventId"),
             credits = decodeProgrammeCredits(fields, "credits", malformed),
+            isRepeat = optionalFlag("isRepeat"),
         )
     }
 

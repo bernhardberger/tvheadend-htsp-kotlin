@@ -215,12 +215,12 @@ not cleared. `configName` and `ageRating` are the exceptions. On the pinned
 server, an update to an upcoming recording always resets both:
 
 - A missing `configName` selects the default DVR configuration
-  (`src/htsp_server.c:2196`, `src/dvr/dvr_db.c:2517-2518`). To keep the
+  (`src/htsp_server.c:2198`, `src/dvr/dvr_db.c:2517-2518`). To keep the
   configuration, pass its name from `getDvrConfigs()`, not the `dvrConfigUuid`
   on the entry: the server looks the value up by name only, and an unknown
   value also selects the default.
 - A missing `ageRating` is stored as 0, no rating
-  (`src/htsp_server.c:2204`, `src/dvr/dvr_db.c:2565-2568`). Pass the entry's
+  (`src/htsp_server.c:2206`, `src/dvr/dvr_db.c:2565-2568`). Pass the entry's
   `ageRating` to keep it.
 
 This renames an upcoming recording and keeps both:
@@ -286,7 +286,7 @@ configuration: the server then leaves the stored one alone
 happens on the server, so it cannot prevent that.
 
 The other three differ in what they do to the recording, and the
-server decides by the recording's state. On the pinned server (HTSP 44):
+server decides by the recording's state. On the pinned server (HTSP 45):
 
 | Call | Upcoming | Running | Finished |
 |---|---|---|---|
@@ -512,7 +512,7 @@ after the open still releases its handle. Two cases are not covered. If the
 caller is cancelled while `fileOpen` waits for its reply, the server may already
 have opened a handle whose id you never see. And this close is best effort: its
 result is not checked. Either way the handle may stay open until the connection
-ends, when the server closes all of them (`src/htsp_server.c:3668-3669`). If
+ends, when the server closes all of them (`src/htsp_server.c:3670-3671`). If
 that matters, download over a connection of its own and close it when you are
 done. Passing the generation to each call stops a request
 for an old handle from reaching a new connection, where the same number would

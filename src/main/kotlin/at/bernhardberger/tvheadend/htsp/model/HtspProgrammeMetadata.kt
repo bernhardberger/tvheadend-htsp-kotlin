@@ -8,7 +8,7 @@ import java.util.Collections
 /**
  * Immutable ordered programme credits for event and EPG replies.
  * A person credited in several roles appears once per role, in wire order.
- * Produced by src/epggrab/module/xmltv.c:726–740, sent as `credits` by
+ * Produced by src/epggrab/module/xmltv.c:728–742, sent as `credits` by
  * src/htsp_server.c:1371–1372 and `cred` by src/epg.c:1796–1798.
  */
 public class HtspProgrammeCredits(entries: List<HtspProgrammeCredit>) {
