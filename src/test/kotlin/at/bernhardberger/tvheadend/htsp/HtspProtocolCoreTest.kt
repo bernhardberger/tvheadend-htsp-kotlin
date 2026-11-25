@@ -59,20 +59,24 @@ class HtspProtocolCoreTest {
     }
 
     @Test
-    fun eventReplyNewFlagPreservesAbsenceAndRejectsMalformedValues() {
+    fun eventReplyBroadcastFlagsPreserveAbsenceAndRejectMalformedValues() {
         val request = GetEventRequest(1L)
         val base = mapOf("eventId" to 1L, "start" to 2L, "stop" to 3L)
-        listOf(null, false, true).forEach { expected ->
-            val fields = expected?.let { base + ("isNew" to if (it) 1L else 0L) } ?: base
-            val result = classifyHtspReply(HtspWireReply(fields), request, 44) as HtspResult.Ok
-            assertEquals(expected, result.value.event.isNew)
-        }
-        listOf(null, true, "1").forEach { malformed ->
-            assertEquals(
-                HtspResult.MalformedReply,
-                classifyHtspReply(HtspWireReply(base + ("isNew" to malformed)), request, 44),
-            )
-        }
+        listOf<Pair<String, (HtspEvent) -> Boolean?>>("isNew" to { it.isNew }, "isRepeat" to { it.isRepeat })
+            .forEach { (field, readFlag) ->
+                listOf(null, false, true).forEach { expected ->
+                    val fields = expected?.let { base + (field to if (it) 1L else 0L) } ?: base
+                    val result = classifyHtspReply(HtspWireReply(fields), request, 44) as HtspResult.Ok
+                    assertEquals(expected, readFlag(result.value.event), field)
+                }
+                listOf(null, true, "1").forEach { malformed ->
+                    assertEquals(
+                        HtspResult.MalformedReply,
+                        classifyHtspReply(HtspWireReply(base + (field to malformed)), request, 44),
+                        field,
+                    )
+                }
+            }
     }
 
     @Test

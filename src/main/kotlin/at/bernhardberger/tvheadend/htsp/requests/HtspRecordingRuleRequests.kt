@@ -126,7 +126,7 @@ public data class AddAutorecEntryRequest(
  * Updates always set the channel restriction: supply the current [channel] to retain it, or
  * [HtspRecordingRuleChannel.Any] to clear it by omitting wire `channelId` (src/htsp_server.c:698–701).
  * No wire shape keeps the stored channel: despite the "keep old one" comment at
- * src/htsp_server.c:2370, an update without `channelId` clears it. Callers that don't know the
+ * src/htsp_server.c:2372, an update without `channelId` clears it. Callers that don't know the
  * current channel cannot update the rule without changing it.
  *
  * @property id UUID of the rule to update (`id`)
@@ -258,7 +258,7 @@ public data class AddTimerecEntryRequest(
  * Updates always set the channel restriction: supply the current [channel] to retain it, or
  * [HtspRecordingRuleChannel.Any] to clear it by omitting wire `channelId` (src/htsp_server.c:698–701).
  * No wire shape keeps the stored channel: despite the "keep old one" comment at
- * src/htsp_server.c:2481, an update without `channelId` clears it. Callers that don't know the
+ * src/htsp_server.c:2483, an update without `channelId` clears it. Callers that don't know the
  * current channel cannot update the rule without changing it.
  *
  * @property id UUID of the rule to update (`id`)

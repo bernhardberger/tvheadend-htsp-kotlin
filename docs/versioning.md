@@ -33,6 +33,7 @@ the server answers with the lower of that and its own.
 |---|---|---|
 | `0.1.0` to `0.10.0` | none enforced | 43 |
 | `1.0.0-beta.1` to `1.0.0-rc.2` | 36 | 44 |
+| unreleased | 36 | 45 |
 
 The default requested version is also the highest version the typed API
 covers. A release that changes either column adds a row here and says so in

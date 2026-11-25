@@ -18,7 +18,7 @@ internal data class HtspWireMessage(val fields: Map<String, Any?>) {
  * `htsmsg_field_find` (`src/htsmsg.c:171–182`).
  *
  * Upstream iterates repeated names where they carry meaning, for example programme
- * credits appended per person and role (`src/epggrab/module/xmltv.c:727,740`), so the
+ * credits appended per person and role (`src/epggrab/module/xmltv.c:729,742`), so the
  * map also keeps every named field in wire order once a name repeats.
  */
 internal class HtspWireMap : LinkedHashMap<String, Any?>() {

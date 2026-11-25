@@ -5,7 +5,7 @@
 [![javadoc](https://javadoc.io/badge2/at.bernhardberger.tvheadend/htsp/javadoc.svg)](https://javadoc.io/doc/at.bernhardberger.tvheadend/htsp)
 [![License: GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-blue.svg)](#requirements)
-[![HTSP v36–v44](https://img.shields.io/badge/HTSP-v36%E2%80%93v44-blue.svg)](docs/htsp-protocol/README.md)
+[![HTSP v36–v45](https://img.shields.io/badge/HTSP-v36%E2%80%93v45-blue.svg)](docs/htsp-protocol/README.md)
 
 An unofficial Kotlin/JVM client for HTSP, the binary protocol that
 [Tvheadend](https://github.com/tvheadend/tvheadend) servers use for channels,
@@ -50,8 +50,8 @@ At runtime the artifact needs only the Kotlin standard library and
 - A Tvheadend server that reports HTSP 36 or newer; HTSP 36 first appeared
   upstream in August 2021. The client rejects older servers before
   authentication with `UNSUPPORTED_SERVER_VERSION`.
-- The client asks for HTSP 44 by default, the newest version the typed API
-  covers, and the server negotiates down. Fields a v36–v43 server doesn't send
+- The client asks for HTSP 45 by default, the newest version the typed API
+  covers, and the server negotiates down. Fields a v36–v44 server doesn't send
   are nullable.
 
 ## Installation

@@ -188,7 +188,7 @@ public data class GetEventsRequest(
     public val eventId: Long? = null,
     public val language: String? = null,
     public val numFollowing: Long? = null,
-    /** HTSP `maxTime`, latest broadcast-start epoch seconds; zero is unlimited, null omits it (htsp_server.c:1812–1827). */
+    /** HTSP `maxTime`, latest broadcast-start epoch seconds; zero is unlimited, null omits it (htsp_server.c:1814–1829). */
     public val maxTimeEpochSeconds: Long? = null,
 ) : HtspRequest<GetEventsResponse>(
     method = "getEvents",
@@ -227,7 +227,7 @@ public data class EpgQueryRequest(
     public val language: String? = null,
     public val fullText: Boolean? = null,
     public val mergeText: Boolean? = null,
-    /** HTSP `full`: 0/1 full-event response flag; null omits it (pinned htsp_server.c:1914). */
+    /** HTSP `full`: 0/1 full-event response flag; null omits it (pinned htsp_server.c:1916). */
     public val full: Boolean? = null,
     public val minDurationSeconds: Long? = null,
     public val maxDurationSeconds: Long? = null,

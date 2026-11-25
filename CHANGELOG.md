@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased]
+
+- `HtspEvent.isRepeat` reports the event flag `isRepeat` that Tvheadend sends
+  next to `isNew` from HTSP 45. It is `true` when the server flags the broadcast
+  as a repeat and `null` when the server does not flag it. Older servers never
+  send it, and `isNew` being `null` or `false` does not mean the broadcast is a
+  repeat. The server sends the flag whatever version the client asked for.
+- The `1.0.0-rc.2` `HtspEvent` constructor and `copy` signatures stay available,
+  including their default-argument bridges. Callers compiled against
+  `1.0.0-rc.2` keep linking, and their `copy` calls keep the repeat flag. Kotlin
+  source compiles unchanged, except inferred callable references such as
+  `event::copy`, whose arity changes (see `docs/versioning.md`). Java source
+  cannot see the hidden overloads and has no default arguments, so Java
+  constructor and `copy` calls must pass the trailing nullable `Boolean`; pass
+  `event.isRepeat()` to `copy` to keep the flag.
+- The client now requests HTSP v45 by default instead of v44. A v45 server
+  behaves the same as before for everything else the client sends or decodes,
+  so `HtspLiveConnection.protocolVersion` reports 45 on v45 servers. Pass
+  `requestedProtocolVersion = 44` to keep the old request.
+- The protocol notes and source citations now pin Tvheadend master
+  `08d1cfbd5619f4230bd404d9a591923be892a83b`, which reports HTSP v45.
+
 ## [1.0.0-rc.2] - 2026-11-14
 
 Second release candidate of the 1.0 line. It fixes one connection-teardown race.

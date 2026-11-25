@@ -6,6 +6,7 @@ import at.bernhardberger.tvheadend.htsp.connection.HtspEndpoint
 import at.bernhardberger.tvheadend.htsp.connection.HtspResult
 import at.bernhardberger.tvheadend.htsp.connection.HtspSubscriptionEvent
 import at.bernhardberger.tvheadend.htsp.connection.HtspTransportEvent
+import at.bernhardberger.tvheadend.htsp.connection.MINIMUM_HTSP_PROTOCOL_VERSION
 import at.bernhardberger.tvheadend.htsp.connection.createHtspConnection
 import at.bernhardberger.tvheadend.htsp.messages.HtspChannelAddMessage
 import at.bernhardberger.tvheadend.htsp.requests.enableAsyncMetadataAwaitingInitialSync
@@ -64,7 +65,7 @@ class HtspLiveServerSmokeTest {
                 assertTrue(outcome is HtspConnectOutcome.Connected, "connect: $outcome")
                 val live = (outcome as HtspConnectOutcome.Connected).connection
                 val protocolVersion = live.protocolVersion
-                assertTrue(protocolVersion in 1..44, "protocol version: $protocolVersion")
+                assertTrue(protocolVersion in MINIMUM_HTSP_PROTOCOL_VERSION..45L, "protocol version: $protocolVersion")
 
                 val sync = connection.enableAsyncMetadataAwaitingInitialSync(idleTimeoutMs = 60_000L)
                 assertTrue(sync is HtspResult.Ok, "initial sync: $sync")

@@ -130,7 +130,9 @@ class HtspMessageDataClassTest {
                 .sortedBy { it.name.removePrefix("component").toInt() }
             val values = components.map { it.invoke(entity) }
             assertFalse(values.contains(Unit))
-            val copy = entity.javaClass.declaredMethods.single { it.name == "copy" && Modifier.isPublic(it.modifiers) }
+            val copy = entity.javaClass.declaredMethods.single {
+                it.name == "copy" && Modifier.isPublic(it.modifiers) && !it.isSynthetic
+            }
             val copied = copy.invoke(entity, *values.toTypedArray())
             assertEquals(entity, copied)
             assertEquals(entity.hashCode(), copied.hashCode())

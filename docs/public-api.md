@@ -389,9 +389,9 @@ negotiated timestamp clock or permit a second collection/subscribe for that id.
 This follows the pinned upstream's `service_restart_streams` in `src/service.c`
 (lines 1050-1073): a composition change emits `SMT_STOP` with
 `SM_CODE_SOURCE_RECONFIGURED`, followed by `SMT_START`. In `src/htsp_server.c`,
-lines 4655-4662 forward these through the same subscription; lines 4400-4422
+lines 4657-4664 forward these through the same subscription; lines 4402-4424
 serialize the same id without destroying it. Unsubscribe separately acknowledges
-then destroys the subscription (lines 2750-2772). See the
+then destroys the subscription (lines 2752-2774). See the
 [upstream pin](htsp-protocol/upstream.json).
 
 Consumers must handle repeated `Started` and reconfigure their decoding pipeline.
@@ -423,7 +423,7 @@ constructors and their `HtspConnection` extensions require a non-null
 `HtspRecordingRuleChannel`: pass the current `Id` to retain the restriction, or
 explicit `Any` to clear it. `Any` omits wire `channelId`; a concrete `Id` sends it.
 The pinned handlers start with a null channel and resolve a supplied non-negative
-`channelId` (`src/htsp_server.c:2359–2382,2470–2493`); the shared converter always
+`channelId` (`src/htsp_server.c:2361–2384,2472–2495`); the shared converter always
 writes the resolved channel UUID or an empty restriction on updates
 (`src/htsp_server.c:698–701`). There is no wire-level "unchanged" channel option.
 
@@ -486,7 +486,7 @@ properties into the old entity with `copy()`: that retains server-side clears.
 The sole inclusion exception is `HtspTag.channelIds` (wire `members`): null means
 "not included in this message", while an empty list means no members. Initial
 sync sends `tagAdd` without members and then `tagUpdate` with members. Tags created
-after initial sync arrive only as `tagUpdate`: pinned `src/htsp_server.c:3854–3868`
+after initial sync arrive only as `tagUpdate`: pinned `src/htsp_server.c:3856–3870`
 routes `htsp_tag_add` through `htsp_tag_update_msg` to
 `htsp_build_tag(..., "tagUpdate", 1)`. Consumers must accept these as inserts.
 
@@ -549,6 +549,13 @@ public data class Example private constructor(
 
 Existing `componentN` functions keep their positions, and equality, hashing and
 `copy` include the new property.
+
+The v45 repeat flag exercises this recipe on `HtspEvent`.
+`consumer-contract/src/rc2Baseline` compiles against the checksum-pinned
+published `1.0.0-rc.2` JAR, and `Rc2BinaryCompatibilityTest` runs its unchanged
+call sites against the staged candidate, covering both default-argument masks
+and preservation of the repeat flag. The baseline dependency is compile-only and
+cannot enter the test runtime classpath.
 
 ## Argument validation and lifecycle calls
 

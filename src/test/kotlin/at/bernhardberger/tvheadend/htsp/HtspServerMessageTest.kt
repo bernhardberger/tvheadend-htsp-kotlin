@@ -114,6 +114,8 @@ class HtspServerMessageTest {
             Triple("dvrEntryUpdate", "duplicate") { (it as HtspDvrEntryUpdateMessage).entry.duplicate },
             Triple("eventAdd", "isNew") { (it as HtspEventAddMessage).event.isNew },
             Triple("eventUpdate", "isNew") { (it as HtspEventUpdateMessage).event.isNew },
+            Triple("eventAdd", "isRepeat") { (it as HtspEventAddMessage).event.isRepeat },
+            Triple("eventUpdate", "isRepeat") { (it as HtspEventUpdateMessage).event.isRepeat },
             Triple("timeshiftStatus", "full") { (it as HtspTimeshiftStatusMessage).full },
             Triple("subscriptionSkip", "absolute") { (it as HtspSubscriptionSkipMessage).absolute },
             Triple("subscriptionSkip", "error") { (it as HtspSubscriptionSkipMessage).error },
