@@ -3,81 +3,87 @@ package at.bernhardberger.tvheadend.htsp.model
 import at.bernhardberger.tvheadend.htsp.wire.immutableSnapshot
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full event snapshot (pinned htsp_server.c:1316–1458); nullable fields are not set. */
+/** Full event snapshot (pinned htsp_server.c:1327–1476); nullable fields are not set. */
 @ConsistentCopyVisibility
 public data class HtspEvent private constructor(
-    /** Unsigned event identity (:1337). */
+    /** Unsigned event identity (:1349). */
     public val eventId: Long,
-    /** Channel identity when linked (:1338–1339). */
+    /** Channel identity when linked (:1350–1351). */
     public val channelId: Long? = null,
-    /** HTSP `start`, always-emitted epoch seconds (:1340). */
+    /** HTSP `start`, always-emitted epoch seconds (:1352). */
     public val startEpochSeconds: Long,
-    /** HTSP `stop`, always-emitted epoch seconds (:1341). */
+    /** HTSP `stop`, always-emitted epoch seconds (:1353). */
     public val stopEpochSeconds: Long,
-    /** Localized title when set (:1342–1343). */
+    /** Localized title when set (:1354–1355). */
     public val title: String? = null,
-    /** Localized subtitle, omitted in basic output mode (:1347–1368). */
+    /** Localized subtitle, omitted in basic output mode (:1359–1380). */
     public val subtitle: String? = null,
-    /** Localized summary, omitted in basic output mode (:1347–1368). */
+    /** Localized summary, omitted in basic output mode (:1359–1380). */
     public val summary: String? = null,
-    /** Localized description, omitted in basic output mode (:1347–1368). */
+    /** Localized description, omitted in basic output mode (:1359–1380). */
     public val description: String? = null,
-    /** Category list when supplied outside basic output mode (:1373–1374). */
+    /** Category list when supplied outside basic output mode (:1385–1386). */
     public val categories: List<String>? = null,
-    /** Keyword list when supplied outside basic output mode (:1375–1376). */
+    /** Keyword list when supplied outside basic output mode (:1387–1388). */
     public val keywords: List<String>? = null,
-    /** Series-link URI when linked (:1379–1380). */
+    /** Series-link URI when linked (:1391–1392). */
     public val seriesLinkUri: String? = null,
-    /** Episode URI unless internal to Tvheadend (:1382–1384). */
+    /** Episode URI unless internal to Tvheadend (:1394–1396). */
     public val episodeUri: String? = null,
-    /** First genre's unsigned content code (:1386–1390). */
+    /** First genre's unsigned content code (:1398–1402). */
     public val contentType: Long? = null,
-    /** Age rating when nonzero (:1391–1393). */
+    /** Age rating when nonzero (:1403–1405). */
     public val ageRating: Long? = null,
-    /** Parental display label when enabled and set (:1395–1426). */
+    /** Parental display label when enabled and set (:1407–1438). */
     public val ratingLabel: String? = null,
-    /** Parental icon when enabled and set (:1395–1426). */
+    /** Parental icon when enabled and set (:1407–1438). */
     public val ratingIcon: String? = null,
-    /** Rating authority when enabled and set (:1395–1426). */
+    /** Rating authority when enabled and set (:1407–1438). */
     public val ratingAuthority: String? = null,
-    /** Rating country when enabled and set (:1395–1426). */
+    /** Rating country when enabled and set (:1407–1438). */
     public val ratingCountry: String? = null,
-    /** Star rating when nonzero (:1428–1429). */
+    /** Star rating when nonzero (:1440–1441). */
     public val starRating: Long? = null,
-    /** Copyright year when nonzero (:1430–1431). */
+    /** Copyright year when nonzero (:1442–1443). */
     public val copyrightYear: Long? = null,
-    /** HTSP `firstAired`, first-air epoch seconds; null means absent (htsp_server.c:1433). */
+    /** HTSP `firstAired`, first-air epoch seconds; null means absent (htsp_server.c:1445). */
     public val firstAiredEpochSeconds: Long? = null,
-    /** HTSP `isNew`: optional new-broadcast flag (pinned htsp_server.c:1435). */
+    /** HTSP `isNew`: optional new-broadcast flag (pinned htsp_server.c:1447). */
     public val isNew: Boolean? = null,
-    /** Season ordinal when set (:712–728,1438–1439). */
+    /** Season ordinal when set (:712–728,1450–1451). */
     public val seasonNumber: Long? = null,
-    /** Season total when set (:712–728,1438–1439). */
+    /** Season total when set (:712–728,1450–1451). */
     public val seasonCount: Long? = null,
-    /** Episode ordinal when set (:712–728,1438–1439). */
+    /** Episode ordinal when set (:712–728,1450–1451). */
     public val episodeNumber: Long? = null,
-    /** Episode total when set (:712–728,1438–1439). */
+    /** Episode total when set (:712–728,1450–1451). */
     public val episodeCount: Long? = null,
-    /** Part ordinal when set (:712–728,1438–1439). */
+    /** Part ordinal when set (:712–728,1450–1451). */
     public val partNumber: Long? = null,
-    /** Part total when set (:712–728,1438–1439). */
+    /** Part total when set (:712–728,1450–1451). */
     public val partCount: Long? = null,
-    /** Episode display text when set (:712–728,1438–1439). */
+    /** Episode display text when set (:712–728,1450–1451). */
     public val episodeOnscreen: String? = null,
-    /** Image URI when nonempty (:1440–1442). */
+    /** Image URI when nonempty (:1452–1454). */
     public val image: String? = null,
-    /** Accessible recording identity when linked (:1444–1453). */
+    /** Accessible recording identity when linked (:1462–1471). */
     public val dvrId: Long? = null,
-    /** Following event identity when available (:1455–1456). */
+    /** Following event identity when available (:1473–1474). */
     public val nextEventId: Long? = null,
-    /** Programme credits, HTSP `credits` (src/htsp_server.c:1371–1372). */
+    /** Programme credits, HTSP `credits` (src/htsp_server.c:1383–1384). */
     public val credits: HtspProgrammeCredits? = null,
     /**
      * HTSP `isRepeat`: optional repeat-broadcast flag, sent next to [isNew] from HTSP 45 regardless of the
-     * negotiated version (pinned htsp_server.c:1436–1437). Older servers never send it. Null means not flagged,
+     * negotiated version (pinned htsp_server.c:1448–1449). Older servers never send it. Null means not flagged,
      * and a null or false [isNew] does not mean a repeat.
      */
     public val isRepeat: Boolean? = null,
+    /** HTSP `imagePoster`, typed programme poster since v46; empty means none, null means absent. */
+    public val imagePoster: String? = null,
+    /** HTSP `imageBackdrop`, typed programme backdrop since v46; empty means none, null means absent. */
+    public val imageBackdrop: String? = null,
+    /** HTSP `imageStill`, typed programme still since v46; empty means none, null means absent. */
+    public val imageStill: String? = null,
     private val immutableSnapshot: Unit,
 ) {
     /** Constructs a validated full event with immutable text lists. */
@@ -116,6 +122,9 @@ public data class HtspEvent private constructor(
         nextEventId: Long? = null,
         credits: HtspProgrammeCredits? = null,
         isRepeat: Boolean? = null,
+        imagePoster: String? = null,
+        imageBackdrop: String? = null,
+        imageStill: String? = null,
     ) : this(
         eventId = eventId,
         channelId = channelId,
@@ -151,6 +160,9 @@ public data class HtspEvent private constructor(
         nextEventId = nextEventId,
         credits = credits,
         isRepeat = isRepeat,
+        imagePoster = imagePoster,
+        imageBackdrop = imageBackdrop,
+        imageStill = imageStill,
         immutableSnapshot = Unit,
     )
 
@@ -190,6 +202,9 @@ public data class HtspEvent private constructor(
         nextEventId: Long? = this.nextEventId,
         credits: HtspProgrammeCredits? = this.credits,
         isRepeat: Boolean? = this.isRepeat,
+        imagePoster: String? = this.imagePoster,
+        imageBackdrop: String? = this.imageBackdrop,
+        imageStill: String? = this.imageStill,
     ): HtspEvent = HtspEvent(
         eventId = eventId,
         channelId = channelId,
@@ -225,9 +240,12 @@ public data class HtspEvent private constructor(
         nextEventId = nextEventId,
         credits = credits,
         isRepeat = isRepeat,
+        imagePoster = imagePoster,
+        imageBackdrop = imageBackdrop,
+        imageStill = imageStill,
     )
 
-    /** Links constructors compiled against rc.2, defaulting the repeat flag to absent. */
+    /** Links constructors compiled against rc.2, defaulting the repeat flag and typed artwork to absent. */
     @Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
     public constructor(
         eventId: Long,
@@ -298,9 +316,12 @@ public data class HtspEvent private constructor(
         nextEventId = nextEventId,
         credits = credits,
         isRepeat = null,
+        imagePoster = null,
+        imageBackdrop = null,
+        imageStill = null,
     )
 
-    /** Keeps the rc.2 copy ABI while retaining this record's repeat flag. */
+    /** Keeps the rc.2 copy ABI while retaining this record's repeat flag and typed artwork. */
     @Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
     public fun copy(
         eventId: Long = this.eventId,
@@ -371,6 +392,9 @@ public data class HtspEvent private constructor(
         nextEventId = nextEventId,
         credits = credits,
         isRepeat = this.isRepeat,
+        imagePoster = this.imagePoster,
+        imageBackdrop = this.imageBackdrop,
+        imageStill = this.imageStill,
     )
 
     override fun toString(): String = "HtspEvent(<redacted>)"

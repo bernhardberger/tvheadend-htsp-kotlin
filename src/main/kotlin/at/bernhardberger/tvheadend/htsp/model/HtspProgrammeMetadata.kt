@@ -9,7 +9,7 @@ import java.util.Collections
  * Immutable ordered programme credits for event and EPG replies.
  * A person credited in several roles appears once per role, in wire order.
  * Produced by src/epggrab/module/xmltv.c:728–742, sent as `credits` by
- * src/htsp_server.c:1371–1372 and `cred` by src/epg.c:1796–1798.
+ * src/htsp_server.c:1383–1384 and `cred` by src/epg.c:1837–1839.
  */
 public class HtspProgrammeCredits(entries: List<HtspProgrammeCredit>) {
     /** Ordered snapshot; repeated names and unknown roles are representable. */
@@ -20,7 +20,7 @@ public class HtspProgrammeCredits(entries: List<HtspProgrammeCredit>) {
     override fun toString(): String = "HtspProgrammeCredits(<redacted>)"
 }
 
-/** One programme credit from pinned htsp_server.c:1371–1372; a person can have several roles. */
+/** One programme credit from pinned htsp_server.c:1383–1384; a person can have several roles. */
 public data class HtspProgrammeCredit(
     /** Person name, the key of the wire credits map. */
     public val name: String,

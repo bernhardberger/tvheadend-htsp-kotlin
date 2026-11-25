@@ -3,109 +3,118 @@ package at.bernhardberger.tvheadend.htsp.model
 import at.bernhardberger.tvheadend.htsp.wire.immutableSnapshot
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full recording snapshot (pinned htsp_server.c:963–1200); null properties are not set. */
+/** Full recording snapshot (pinned htsp_server.c:963–1211); null properties are not set. */
 @ConsistentCopyVisibility
 public data class HtspDvrEntry private constructor(
-    /** Unsigned recording identity (:975). */
+    /** Unsigned recording identity (:976). */
     public val entryId: Long,
-    /** UUID introduced in v41; required on the wire at v41+ (:976). */
+    /** UUID introduced in v41; required on the wire at v41+ (:977). */
     public val entryUuid: String?,
-    /** Always-emitted enable flag (:979). */
+    /** Always-emitted enable flag (:980). */
     public val enabled: Boolean,
-    /** Linked channel, absent after channel deletion (:980–981). */
+    /** Linked channel, absent after channel deletion (:981–982). */
     public val channelId: Long?,
-    /** Saved channel name, when available (:982–983). */
+    /** Saved channel name, when available (:983–984). */
     public val channelName: String?,
-    /** Linked broadcast identity (:985–986). */
+    /** Linked broadcast identity (:986–987). */
     public val eventId: Long?,
-    /** Linked automatic rule UUID (:988–989). */
+    /** Linked automatic rule UUID (:989–990). */
     public val autorecEntryUuid: String?,
-    /** Linked time rule UUID (:991–992). */
+    /** Linked time rule UUID (:992–993). */
     public val timerecEntryUuid: String?,
-    /** Scheduled start in epoch seconds (:994). */
+    /** Scheduled start in epoch seconds (:995). */
     public val startEpochSeconds: Long,
-    /** Scheduled stop in epoch seconds (:995). */
+    /** Scheduled stop in epoch seconds (:996). */
     public val stopEpochSeconds: Long,
-    /** Pre-recording padding in minutes (:996). */
+    /** Pre-recording padding in minutes (:997). */
     public val startExtraMinutes: Long,
-    /** Post-recording padding in minutes (:997). */
+    /** Post-recording padding in minutes (:998). */
     public val stopExtraMinutes: Long,
-    /** Retention days or policy sentinel (:999–1003). */
+    /** Retention days or policy sentinel (:1000–1004). */
     public val retentionDays: Long,
-    /** Removal days or policy sentinel (:1005). */
+    /** Removal days or policy sentinel (:1006). */
     public val removalDays: Long,
-    /** Effective priority (:1006–1011). */
+    /** Effective priority (:1007–1012). */
     public val priority: Long,
-    /** Content code, including zero (:1012). */
+    /** Content code, including zero (:1013). */
     public val contentType: Long,
-    /** Age rating (:1013); null only on v36 sessions where the server omits it. Required from v37. */
+    /** Age rating (:1014); null only on v36 sessions where the server omits it. Required from v37. */
     public val ageRating: Long?,
-    /** Parental display label when enabled and set (:1015–1072). */
+    /** Parental display label when enabled and set (:1016–1073). */
     public val ratingLabel: String?,
-    /** Parental icon when enabled and set (:1015–1072). */
+    /** Parental icon when enabled and set (:1016–1073). */
     public val ratingIcon: String?,
-    /** Rating authority when enabled and set (:1015–1072). */
+    /** Rating authority when enabled and set (:1016–1073). */
     public val ratingAuthority: String?,
-    /** Rating country when enabled and set (:1015–1072). */
+    /** Rating country when enabled and set (:1016–1073). */
     public val ratingCountry: String?,
-    /** Play count, only for recording or completed entries (:1074–1077). */
+    /** Play count, only for recording or completed entries (:1075–1078). */
     public val playCount: Long?,
-    /** Playback position in seconds, only for recording or completed entries (:1074–1077). */
+    /** Playback position in seconds, only for recording or completed entries (:1075–1078). */
     public val playPositionSeconds: Long?,
-    /** Season ordinal when set (:712–728,1103). */
+    /** Season ordinal when set (:712–728,1104). */
     public val seasonNumber: Long?,
-    /** Season total when set (:712–728,1103). */
+    /** Season total when set (:712–728,1104). */
     public val seasonCount: Long?,
-    /** Episode ordinal when set (:712–728,1103). */
+    /** Episode ordinal when set (:712–728,1104). */
     public val episodeNumber: Long?,
-    /** Episode total when set (:712–728,1103). */
+    /** Episode total when set (:712–728,1104). */
     public val episodeCount: Long?,
-    /** Part ordinal when set (:712–728,1103). */
+    /** Part ordinal when set (:712–728,1104). */
     public val partNumber: Long?,
-    /** Part total when set (:712–728,1103). */
+    /** Part total when set (:712–728,1104). */
     public val partCount: Long?,
-    /** Episode display text, wire `episode` (:728,1103). */
+    /** Episode display text, wire `episode` (:728,1104). */
     public val episodeOnscreen: String?,
-    /** Localized title when set (:1079–1080). */
+    /** Localized title when set (:1080–1081). */
     public val title: String?,
-    /** Localized description when set (:1095–1101). */
+    /** Localized description when set (:1096–1102). */
     public val description: String?,
-    /** Localized summary when set (:1095–1101). */
+    /** Localized summary when set (:1096–1102). */
     public val summary: String?,
-    /** Localized subtitle when set (:1095–1101). */
+    /** Localized subtitle when set (:1096–1102). */
     public val subtitle: String?,
-    /** Owner when set (:1104). */
+    /** Owner when set (:1105). */
     public val owner: String?,
-    /** Creator when set (:1105). */
+    /** Creator when set (:1106). */
     public val creator: String?,
-    /** Comment when set (:1106). */
+    /** Comment when set (:1107). */
     public val comment: String?,
-    /** Image URI when nonempty (:1111–1113). */
+    /** Image URI when nonempty (:1112–1114). */
     public val image: String?,
-    /** Fanart URI when nonempty (:1115–1117). */
+    /**
+     * Fanart URI, HTSP `fanartImage`. Since v46 every full update carries it, empty when there is none, and
+     * the server falls back to the backdrop image; older servers send it only when nonempty (:1116–1123).
+     */
     public val fanartImage: String?,
-    /** Copyright year when nonzero (:1118–1119). */
+    /** Copyright year when nonzero (:1129–1130). */
     public val copyrightYear: Long?,
-    /** Immutable file snapshot when files and a configuration exist (:1122–1145). */
+    /** Immutable file snapshot when files and a configuration exist (:1133–1156). */
     public val files: List<HtspDvrRecordingFile>?,
-    /** Last file's relative path when available (:1147–1149). */
+    /** Last file's relative path when available (:1158–1160). */
     public val path: String?,
-    /** Recording configuration UUID, wire `configId`, when linked (:1151–1152). */
+    /** Recording configuration UUID, wire `configId`, when linked (:1162–1163). */
     public val dvrConfigUuid: String?,
-    /** Duplicate flag, only for upcoming entries (:1185–1186). */
+    /** Duplicate flag, only for upcoming entries (:1196–1197). */
     public val duplicate: Boolean?,
-    /** Always-emitted recording state (:1155–1188). */
+    /** Always-emitted recording state (:1166–1199). */
     public val state: String,
-    /** Recording error when present (:1189–1190). */
+    /** Recording error when present (:1200–1201). */
     public val error: String?,
-    /** Subscription error when present (:1191–1192). */
+    /** Subscription error when present (:1202–1203). */
     public val subscriptionError: String?,
-    /** Nonzero stream-error count (:1193–1194). */
+    /** Nonzero stream-error count (:1204–1205). */
     public val streamErrors: Long?,
-    /** Nonzero data-error count (:1195–1196). */
+    /** Nonzero data-error count (:1206–1207). */
     public val dataErrors: Long?,
-    /** Known file size for recording or completed entries (:1161,1171,1197–1198). */
+    /** Known file size for recording or completed entries (:1172,1182,1208–1209). */
     public val dataSizeBytes: Long?,
+    /** HTSP `imagePoster`, typed programme poster since v46; empty means none, null means absent. */
+    public val imagePoster: String? = null,
+    /** HTSP `imageBackdrop`, typed programme backdrop since v46; empty means none, null means absent. */
+    public val imageBackdrop: String? = null,
+    /** HTSP `imageStill`, typed programme still since v46; empty means none, null means absent. */
+    public val imageStill: String? = null,
     private val immutableSnapshot: Unit,
 ) {
     /** Constructs a validated full recording snapshot. */
@@ -160,6 +169,9 @@ public data class HtspDvrEntry private constructor(
         streamErrors: Long? = null,
         dataErrors: Long? = null,
         dataSizeBytes: Long? = null,
+        imagePoster: String? = null,
+        imageBackdrop: String? = null,
+        imageStill: String? = null,
     ) : this(
         entryId, entryUuid, enabled, channelId, channelName, eventId, autorecEntryUuid, timerecEntryUuid,
         startEpochSeconds, stopEpochSeconds, startExtraMinutes, stopExtraMinutes, retentionDays, removalDays,
@@ -167,7 +179,7 @@ public data class HtspDvrEntry private constructor(
         playCount, playPositionSeconds, seasonNumber, seasonCount, episodeNumber, episodeCount, partNumber,
         partCount, episodeOnscreen, title, description, summary, subtitle, owner, creator, comment,
         image, fanartImage, copyrightYear, files?.immutableSnapshot(), path, dvrConfigUuid, duplicate,
-        state, error, subscriptionError, streamErrors, dataErrors, dataSizeBytes, Unit,
+        state, error, subscriptionError, streamErrors, dataErrors, dataSizeBytes, imagePoster, imageBackdrop, imageStill, Unit,
     )
 
     /** Returns a validated copy with an immutable file snapshot. */
@@ -222,6 +234,9 @@ public data class HtspDvrEntry private constructor(
         streamErrors: Long? = this.streamErrors,
         dataErrors: Long? = this.dataErrors,
         dataSizeBytes: Long? = this.dataSizeBytes,
+        imagePoster: String? = this.imagePoster,
+        imageBackdrop: String? = this.imageBackdrop,
+        imageStill: String? = this.imageStill,
     ): HtspDvrEntry = HtspDvrEntry(
         entryId, entryUuid, enabled, channelId, channelName, eventId, autorecEntryUuid, timerecEntryUuid,
         startEpochSeconds, stopEpochSeconds, startExtraMinutes, stopExtraMinutes, retentionDays, removalDays,
@@ -230,6 +245,7 @@ public data class HtspDvrEntry private constructor(
         partCount, episodeOnscreen, title, description, summary, subtitle, owner, creator, comment,
         image, fanartImage, copyrightYear, files, path, dvrConfigUuid, duplicate,
         state, error, subscriptionError, streamErrors, dataErrors, dataSizeBytes,
+        imagePoster, imageBackdrop, imageStill,
     )
 
     init {
@@ -243,6 +259,224 @@ public data class HtspDvrEntry private constructor(
             episodeNumber, episodeCount, partNumber, partCount, copyrightYear, streamErrors, dataErrors,
         ).forEach { requireU32("recording field", it) }
     }
+
+    /** Links constructors compiled against rc.2, defaulting typed artwork to absent. */
+    @Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+    public constructor(
+        entryId: Long,
+        entryUuid: String? = null,
+        enabled: Boolean,
+        channelId: Long? = null,
+        channelName: String? = null,
+        eventId: Long? = null,
+        autorecEntryUuid: String? = null,
+        timerecEntryUuid: String? = null,
+        startEpochSeconds: Long,
+        stopEpochSeconds: Long,
+        startExtraMinutes: Long,
+        stopExtraMinutes: Long,
+        retentionDays: Long,
+        removalDays: Long,
+        priority: Long,
+        contentType: Long,
+        ageRating: Long? = null,
+        ratingLabel: String? = null,
+        ratingIcon: String? = null,
+        ratingAuthority: String? = null,
+        ratingCountry: String? = null,
+        playCount: Long? = null,
+        playPositionSeconds: Long? = null,
+        seasonNumber: Long? = null,
+        seasonCount: Long? = null,
+        episodeNumber: Long? = null,
+        episodeCount: Long? = null,
+        partNumber: Long? = null,
+        partCount: Long? = null,
+        episodeOnscreen: String? = null,
+        title: String? = null,
+        description: String? = null,
+        summary: String? = null,
+        subtitle: String? = null,
+        owner: String? = null,
+        creator: String? = null,
+        comment: String? = null,
+        image: String? = null,
+        fanartImage: String? = null,
+        copyrightYear: Long? = null,
+        files: List<HtspDvrRecordingFile>? = null,
+        path: String? = null,
+        dvrConfigUuid: String? = null,
+        duplicate: Boolean? = null,
+        state: String,
+        error: String? = null,
+        subscriptionError: String? = null,
+        streamErrors: Long? = null,
+        dataErrors: Long? = null,
+        dataSizeBytes: Long? = null,
+    ) : this(
+        entryId = entryId,
+        entryUuid = entryUuid,
+        enabled = enabled,
+        channelId = channelId,
+        channelName = channelName,
+        eventId = eventId,
+        autorecEntryUuid = autorecEntryUuid,
+        timerecEntryUuid = timerecEntryUuid,
+        startEpochSeconds = startEpochSeconds,
+        stopEpochSeconds = stopEpochSeconds,
+        startExtraMinutes = startExtraMinutes,
+        stopExtraMinutes = stopExtraMinutes,
+        retentionDays = retentionDays,
+        removalDays = removalDays,
+        priority = priority,
+        contentType = contentType,
+        ageRating = ageRating,
+        ratingLabel = ratingLabel,
+        ratingIcon = ratingIcon,
+        ratingAuthority = ratingAuthority,
+        ratingCountry = ratingCountry,
+        playCount = playCount,
+        playPositionSeconds = playPositionSeconds,
+        seasonNumber = seasonNumber,
+        seasonCount = seasonCount,
+        episodeNumber = episodeNumber,
+        episodeCount = episodeCount,
+        partNumber = partNumber,
+        partCount = partCount,
+        episodeOnscreen = episodeOnscreen,
+        title = title,
+        description = description,
+        summary = summary,
+        subtitle = subtitle,
+        owner = owner,
+        creator = creator,
+        comment = comment,
+        image = image,
+        fanartImage = fanartImage,
+        copyrightYear = copyrightYear,
+        files = files,
+        path = path,
+        dvrConfigUuid = dvrConfigUuid,
+        duplicate = duplicate,
+        state = state,
+        error = error,
+        subscriptionError = subscriptionError,
+        streamErrors = streamErrors,
+        dataErrors = dataErrors,
+        dataSizeBytes = dataSizeBytes,
+        imagePoster = null,
+        imageBackdrop = null,
+        imageStill = null,
+    )
+
+    /** Keeps the rc.2 copy ABI while retaining this record's typed artwork. */
+    @Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+    public fun copy(
+        entryId: Long = this.entryId,
+        entryUuid: String? = this.entryUuid,
+        enabled: Boolean = this.enabled,
+        channelId: Long? = this.channelId,
+        channelName: String? = this.channelName,
+        eventId: Long? = this.eventId,
+        autorecEntryUuid: String? = this.autorecEntryUuid,
+        timerecEntryUuid: String? = this.timerecEntryUuid,
+        startEpochSeconds: Long = this.startEpochSeconds,
+        stopEpochSeconds: Long = this.stopEpochSeconds,
+        startExtraMinutes: Long = this.startExtraMinutes,
+        stopExtraMinutes: Long = this.stopExtraMinutes,
+        retentionDays: Long = this.retentionDays,
+        removalDays: Long = this.removalDays,
+        priority: Long = this.priority,
+        contentType: Long = this.contentType,
+        ageRating: Long? = this.ageRating,
+        ratingLabel: String? = this.ratingLabel,
+        ratingIcon: String? = this.ratingIcon,
+        ratingAuthority: String? = this.ratingAuthority,
+        ratingCountry: String? = this.ratingCountry,
+        playCount: Long? = this.playCount,
+        playPositionSeconds: Long? = this.playPositionSeconds,
+        seasonNumber: Long? = this.seasonNumber,
+        seasonCount: Long? = this.seasonCount,
+        episodeNumber: Long? = this.episodeNumber,
+        episodeCount: Long? = this.episodeCount,
+        partNumber: Long? = this.partNumber,
+        partCount: Long? = this.partCount,
+        episodeOnscreen: String? = this.episodeOnscreen,
+        title: String? = this.title,
+        description: String? = this.description,
+        summary: String? = this.summary,
+        subtitle: String? = this.subtitle,
+        owner: String? = this.owner,
+        creator: String? = this.creator,
+        comment: String? = this.comment,
+        image: String? = this.image,
+        fanartImage: String? = this.fanartImage,
+        copyrightYear: Long? = this.copyrightYear,
+        files: List<HtspDvrRecordingFile>? = this.files,
+        path: String? = this.path,
+        dvrConfigUuid: String? = this.dvrConfigUuid,
+        duplicate: Boolean? = this.duplicate,
+        state: String = this.state,
+        error: String? = this.error,
+        subscriptionError: String? = this.subscriptionError,
+        streamErrors: Long? = this.streamErrors,
+        dataErrors: Long? = this.dataErrors,
+        dataSizeBytes: Long? = this.dataSizeBytes,
+    ): HtspDvrEntry = copy(
+        entryId = entryId,
+        entryUuid = entryUuid,
+        enabled = enabled,
+        channelId = channelId,
+        channelName = channelName,
+        eventId = eventId,
+        autorecEntryUuid = autorecEntryUuid,
+        timerecEntryUuid = timerecEntryUuid,
+        startEpochSeconds = startEpochSeconds,
+        stopEpochSeconds = stopEpochSeconds,
+        startExtraMinutes = startExtraMinutes,
+        stopExtraMinutes = stopExtraMinutes,
+        retentionDays = retentionDays,
+        removalDays = removalDays,
+        priority = priority,
+        contentType = contentType,
+        ageRating = ageRating,
+        ratingLabel = ratingLabel,
+        ratingIcon = ratingIcon,
+        ratingAuthority = ratingAuthority,
+        ratingCountry = ratingCountry,
+        playCount = playCount,
+        playPositionSeconds = playPositionSeconds,
+        seasonNumber = seasonNumber,
+        seasonCount = seasonCount,
+        episodeNumber = episodeNumber,
+        episodeCount = episodeCount,
+        partNumber = partNumber,
+        partCount = partCount,
+        episodeOnscreen = episodeOnscreen,
+        title = title,
+        description = description,
+        summary = summary,
+        subtitle = subtitle,
+        owner = owner,
+        creator = creator,
+        comment = comment,
+        image = image,
+        fanartImage = fanartImage,
+        copyrightYear = copyrightYear,
+        files = files,
+        path = path,
+        dvrConfigUuid = dvrConfigUuid,
+        duplicate = duplicate,
+        state = state,
+        error = error,
+        subscriptionError = subscriptionError,
+        streamErrors = streamErrors,
+        dataErrors = dataErrors,
+        dataSizeBytes = dataSizeBytes,
+        imagePoster = this.imagePoster,
+        imageBackdrop = this.imageBackdrop,
+        imageStill = this.imageStill,
+    )
 
     override fun toString(): String = "HtspDvrEntry(<redacted>)"
 }

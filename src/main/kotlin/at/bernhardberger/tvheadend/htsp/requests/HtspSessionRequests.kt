@@ -44,7 +44,7 @@ public data object HtspEmptyResponse
  * @property apiVersion JSON API version (`api_version`); `null` when absent
  */
 public class HelloResponse(
-    /** HTSP `htspversion`, unitless server protocol version (htsp_server.c:1488). */
+    /** HTSP `htspversion`, unitless server protocol version (htsp_server.c:1506). */
     public val protocolVersion: Long,
     public val serverName: String?,
     public val serverVersion: String?,
@@ -141,7 +141,7 @@ public data class GetDiskSpaceResponse(
  * @property gmtOffsetMinutes server offset from GMT in minutes (`gmtoffset`); positive east, `null` when absent
  */
 public data class GetSysTimeResponse(
-    /** HTSP `time`, epoch seconds from `timeval.tv_sec` (htsp_server.c:1637). */
+    /** HTSP `time`, epoch seconds from `timeval.tv_sec` (htsp_server.c:1655). */
     public val timeEpochSeconds: Long,
     public val legacyTimezoneHoursWestOfGmt: Int,
     public val gmtOffsetMinutes: Int?,
@@ -153,7 +153,7 @@ public data class GetSysTimeResponse(
  * @property clientName name the server logs and records for this client (`clientname`)
  */
 public data class HelloRequest(
-    /** HTSP `htspversion`, unitless requested protocol version; at least [MINIMUM_HTSP_PROTOCOL_VERSION] (htsp_server.c:1475). */
+    /** HTSP `htspversion`, unitless requested protocol version; at least [MINIMUM_HTSP_PROTOCOL_VERSION] (htsp_server.c:1493). */
     public val protocolVersion: Long,
     public val clientName: String,
 ) : HtspRequest<HelloResponse>(
@@ -203,19 +203,19 @@ public class GetSysTimeRequest : HtspRequest<GetSysTimeResponse>(
  * @property language language for localized text (`language`); `null` omits it and keeps the connection's current language, an empty string clears it
  */
 public data class EnableAsyncMetadataRequest(
-    /** HTSP `epg`: 0/1 metadata flag; null preserves server state (pinned htsp_server.c:1661-1662). */
+    /** HTSP `epg`: 0/1 metadata flag; null preserves server state (pinned htsp_server.c:1679-1680). */
     public val epg: Boolean? = null,
     /**
      * HTSP `lastUpdate`, epoch seconds; 0 means never synchronized, so the server sends all eligible metadata;
-     * null omits it (htsp_server.c:1663–1666,1701). Access, EPG enablement and window limits still apply;
-     * an existing async session resends eligible EPG events starting after this frontier (4086–4102).
+     * null omits it (htsp_server.c:1681–1684,1719). Access, EPG enablement and window limits still apply;
+     * an existing async session resends eligible EPG events starting after this frontier (4104–4120).
      */
     public val lastUpdateEpochSeconds: Long? = null,
     /**
      * HTSP `epgMaxTime`, epoch seconds; the server pushes EPG events up to this far ahead of its current time, as a
      * window of at least 600 seconds that moves forward as time passes; when EPG is not on yet, zero or a time not in
      * the future means unlimited window; on a session that already pushes EPG it can only extend an existing limit;
-     * null omits it (htsp_server.c:1667–1678, 4085–4108).
+     * null omits it (htsp_server.c:1685–1696, 4103–4126).
      */
     public val epgMaxTimeEpochSeconds: Long? = null,
     public val language: String? = null,

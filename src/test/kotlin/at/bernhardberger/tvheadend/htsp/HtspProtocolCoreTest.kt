@@ -1634,6 +1634,8 @@ class HtspProtocolCoreTest {
                 "slink" to "series-link",
                 "elink" to "episode-link",
                 "cred" to linkedMapOf("Person" to "actor"),
+                "img_poster" to "poster-ref",
+                "img_backdrop" to "",
             ),
         )
 
@@ -1684,6 +1686,9 @@ class HtspProtocolCoreTest {
                         seriesLinkUri = "series-link",
                         episodeLinkUri = "episode-link",
                         credits = HtspProgrammeCredits(listOf(HtspProgrammeCredit("Person", "actor"))),
+                        imagePoster = "poster-ref",
+                        imageBackdrop = "",
+                        imageStill = null,
                     ),
                 ),
             ),
@@ -1691,6 +1696,12 @@ class HtspProtocolCoreTest {
         )
         assertEquals("getEpgObject", transport.lastMethod)
         assertEquals(linkedMapOf("id" to 42L, "type" to 1L), transport.lastFields)
+
+        transport.reply = HtspWireReply(validGetEpgObjectReply().apply { put("img_still", "still-ref") })
+        assertEquals(
+            "still-ref",
+            (connection.call(GetEpgObjectRequest(1L)) as HtspResult.Ok).value.broadcast.imageStill,
+        )
 
         transport.reply = HtspWireReply(
             validGetEpgObjectReply().apply { put("cred", listOf(null, 1L, "still opaque")) },
@@ -1733,6 +1744,9 @@ class HtspProtocolCoreTest {
             validGetEpgObjectReply().apply { put("cat", listOf("news", "documentary")) },
             validGetEpgObjectReply().apply { put("key", "not-a-list") },
             validGetEpgObjectReply().apply { put("fair", 1) },
+            validGetEpgObjectReply().apply { put("img_poster", 1L) },
+            validGetEpgObjectReply().apply { put("img_backdrop", 1L) },
+            validGetEpgObjectReply().apply { put("img_still", 1L) },
         )
 
         malformed.forEach { fields ->

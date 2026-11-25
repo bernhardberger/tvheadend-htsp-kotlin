@@ -40,7 +40,7 @@ class HtspEntityDecodingTest {
 
     @Test
     fun dvrStatsOnlyCarriesTheFieldsOutsideTheStatsonlyGate() {
-        // htsp_server.c:975–978,1155–1199: every non-identity field here is outside !statsonly.
+        // htsp_server.c:976–979,1166–1210: every non-identity field here is outside !statsonly.
         val fields = mapOf("method" to "dvrEntryUpdate", "id" to 1L, "idStr" to "uuid", "state" to "recording")
         assertEquals(HtspDvrEntryStatsMessage(1L, "uuid", "recording"), decoded(fields))
         assertEquals(
@@ -51,7 +51,10 @@ class HtspEntityDecodingTest {
         malformed(fields - "state")
         malformed(fields - "id")
         malformed(fields + ("unexpected" to 1L))
-        malformed(fields + ("title" to "damaged-full"))
+        // Artwork is emitted only inside !statsonly, so it marks a damaged full update.
+        listOf("title", "fanartImage", "imagePoster", "imageBackdrop", "imageStill").forEach {
+            malformed(fields + (it to ""))
+        }
         malformed(metadataFixture("dvrEntryUpdate") - "enabled")
         malformed(fields + ("enabled" to 1L))
         listOf("dvrId", "status", "statusError").forEach { malformed(fields + (it to 1L)) }
@@ -163,14 +166,19 @@ class HtspEntityDecodingTest {
 
     @Test
     fun allEventReplyPathsMatchPushedSnapshotsAtTheNegotiatedVersion() {
-        val fields = (metadataFixture("eventAdd") - "method") + mapOf(
+        val base = (metadataFixture("eventAdd") - "method") + mapOf(
             "channelId" to 2L, "title" to "title", "genre" to "genre", "episodeId" to 3L, "serieslinkId" to 4L,
             "category" to listOf("category"), "keyword" to listOf("keyword"), "credits" to mapOf("Person" to "actor"),
             "episode" to mapOf("season" to 5L, "number" to 6L),
             "seasonNumber" to 7L, "episodeNumber" to 8L, "serieslinkUri" to "series", "episodeUri" to "episode",
         )
-        listOf(36L, 41L, 44L).forEach { version ->
+        val imageKeys = listOf("imagePoster", "imageBackdrop", "imageStill")
+        // Each image key is set, empty and absent in one of the three rows.
+        val images = listOf(listOf("poster", "", null), listOf(null, "backdrop", ""), listOf("", null, "still"))
+        for (version in listOf(36L, 41L, 44L, 46L)) for (expectedImages in images) {
+            val fields = base + imageKeys.zip(expectedImages).filter { it.second != null }.toMap()
             val event = reply(GetEventRequest(1L), fields, version).event
+            assertEquals(expectedImages, listOf(event.imagePoster, event.imageBackdrop, event.imageStill))
             assertEquals(7L, event.seasonNumber)
             assertEquals(8L, event.episodeNumber)
             assertEquals("series", event.seriesLinkUri)
@@ -182,6 +190,11 @@ class HtspEntityDecodingTest {
                 mapOf("events" to listOf(fields)), version) as EpgQueryResponse.Events).events)
             assertEquals(HtspResult.MalformedReply,
                 classifyHtspReply(HtspWireReply(fields - "start" + ("startTime" to 2L)), GetEventRequest(1L), version))
+            imageKeys.forEach { key ->
+                assertEquals(HtspResult.MalformedReply,
+                    classifyHtspReply(HtspWireReply(fields + (key to 1L)), GetEventRequest(1L), version))
+                malformed(fields + mapOf("method" to "eventUpdate", key to 1L), version)
+            }
         }
     }
 
@@ -234,6 +247,28 @@ class HtspEntityDecodingTest {
                         as at.bernhardberger.tvheadend.htsp.model.HtspDvrEntry
                     assertEquals(expected, entry.files!!.single())
                 }
+            }
+        }
+    }
+
+    @Test
+    fun dvrFullUpdatesKeepEmptyAndAbsentArtworkApart() {
+        val keys = listOf("fanartImage", "imagePoster", "imageBackdrop", "imageStill")
+        fun HtspServerMessage.artwork() = with(entity(this) as at.bernhardberger.tvheadend.htsp.model.HtspDvrEntry) {
+            listOf(fanartImage, imagePoster, imageBackdrop, imageStill)
+        }
+        listOf("dvrEntryAdd", "dvrEntryUpdate").forEach { method ->
+            listOf(44L, 46L).forEach { version ->
+                // v46 sends every key on full updates, empty when unset; older servers omit unset ones.
+                listOf(
+                    listOf(null, null, null, null), listOf("", "", "", ""),
+                    listOf("fanart", "poster", "", null), listOf(null, "", "backdrop", "still"),
+                )
+                    .forEach { expected ->
+                        val artwork = keys.zip(expected).filter { it.second != null }.toMap()
+                        assertEquals(expected, decoded(metadataFixture(method) + artwork, version).artwork())
+                    }
+                keys.forEach { malformed(metadataFixture(method) + (it to 1L), version) }
             }
         }
     }

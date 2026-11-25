@@ -32,13 +32,13 @@ public data object FileCloseResponse
  */
 public data class FileStatResponse(
     public val sizeBytes: Long?,
-    /** HTSP `mtime`, epoch seconds from POSIX `st_mtime`; null means unavailable (htsp_server.c:3101). */
+    /** HTSP `mtime`, epoch seconds from POSIX `st_mtime`; null means unavailable (htsp_server.c:3119). */
     public val modifiedAtEpochSeconds: Long?,
 )
 
 /** Contains the successful absolute non-negative file offset after a seek. */
 public data class FileSeekResponse(
-    /** HTSP `offset`, absolute byte offset (htsp_server.c:3148). */
+    /** HTSP `offset`, absolute byte offset (htsp_server.c:3166). */
     public val offsetBytes: Long,
 )
 
@@ -63,9 +63,9 @@ public data class FileOpenRequest(public val file: String) : HtspRequest<FileOpe
 /** Selects an open file [id], bounded [sizeBytes], and optional signed [offsetBytes] for one read. */
 public data class FileReadRequest(
     public val id: Long,
-    /** HTSP `size`, bytes to read (htsp_server.c:3008–3031). */
+    /** HTSP `size`, bytes to read (htsp_server.c:3026–3049). */
     public val sizeBytes: Long,
-    /** HTSP `offset`, absolute byte offset; null keeps the current file position (htsp_server.c:3016–3017). */
+    /** HTSP `offset`, absolute byte offset; null keeps the current file position (htsp_server.c:3034–3035). */
     public val offsetBytes: Long? = null,
 ) : HtspRequest<FileReadResponse>(
     method = "fileRead",
@@ -116,7 +116,7 @@ public data class FileStatRequest(public val id: Long) : HtspRequest<FileStatRes
 /** Selects an open file [id], signed [offsetBytes], and optional finite [whence] origin. */
 public data class FileSeekRequest(
     public val id: Long,
-    /** HTSP `offset`, signed bytes relative to [whence] (htsp_server.c:3123–3148). */
+    /** HTSP `offset`, signed bytes relative to [whence] (htsp_server.c:3141–3166). */
     public val offsetBytes: Long,
     public val whence: FileSeekWhence? = null,
 ) : HtspRequest<FileSeekResponse>(

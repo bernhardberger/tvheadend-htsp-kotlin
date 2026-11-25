@@ -2,7 +2,7 @@
 
 This directory contains protocol reference notes for the hand-maintained HTSP
 surface. The typed surface was reviewed against Tvheadend revision
-`08d1cfbd5619f4230bd404d9a591923be892a83b`, which reports HTSP v45.
+`1aa41209fd3f87da65af7deb533d87ab48745ff3`, which reports HTSP v46.
 
 ## Artifacts
 
@@ -15,25 +15,39 @@ The upstream source bodies are not vendored here.
 
 ## Version posture
 
-The client requests HTSP v45 by default, and servers clamp the negotiated
+The client requests HTSP v46 by default, and servers clamp the negotiated
 version with `MIN(server, requested)`. The minimum supported server version is
 HTSP 36, first introduced upstream in 2021-08 (revision `81403634`). Servers
 reporting a lower version are rejected before authentication with
 `UNSUPPORTED_SERVER_VERSION`, not `INCOMPATIBLE_SERVER` (a protocol violation).
 Callers may explicitly request another version at or above 36. Servers at
-v36–v44 omit newer fields; these observations remain nullable rather than being
+v36–v45 omit newer fields; these observations remain nullable rather than being
 invented by the client. The typed surface's coverage ceiling is Tvheadend master at
-`08d1cfbd`, which reports HTSP v45. v44 adds only `feAbsoluteSNR` and
+`1aa41209f`, which reports HTSP v46. v44 adds only `feAbsoluteSNR` and
 `feAbsoluteSignal` on `signalStatus`; both are decoded as optional fields.
 The server emits them according to the frontend's signal scale, not the
-negotiated version (pinned `src/htsp_server.c:4524-4531` has no version
+negotiated version (pinned `src/htsp_server.c:4542-4549` has no version
 guard), so a v44 server may send them on a v43 link and an older server never
 sends them. v45 adds only the event flag `isRepeat`, next to `isNew`; it is
 decoded as an optional field. The server sends it whenever the broadcast is
 flagged as a repeat, again without a version guard
-(`src/htsp_server.c:1436-1437`), so a v45 server may send it on an older link
-and an older server never sends it. The pinned server has no other behavior
-that depends on a negotiated version of 43, 44 or 45.
+(`src/htsp_server.c:1448-1449`), so a v45 server may send it on an older link
+and an older server never sends it.
+
+v46 adds typed programme artwork from
+[tvheadend/tvheadend#2343](https://github.com/tvheadend/tvheadend/pull/2343).
+Event and DVR messages carry `imagePoster`, `imageBackdrop` and `imageStill`;
+detailed EPG objects carry `img_poster`, `img_backdrop` and `img_still`
+(`src/epg.c:1435-1439`). Values use the same image-cache or URL form as
+`image`. The event sender adds all three keys, empty when the event has no such
+image, without a version guard (`src/htsp_server.c:1455-1460`), so a v46 server
+also sends them on an older link. DVR add and full update messages add all
+three, empty when absent (`src/htsp_server.c:1124-1128`); statistics-only DVR updates omit them and retain their
+separate sparse-update type. The same server also emits `fanartImage` on every
+full DVR update, empty when absent, and falls back to the backdrop when the
+entry has no fanart (`src/htsp_server.c:1116-1123`). Older servers never send
+the typed keys. The pinned server has no other behavior that depends on a
+negotiated version of 43 to 46.
 
 HTSP protocol versions are not Tvheadend release versions. Bumping the pin is a
 manual, reviewed change: read the upstream diff, edit the Kotlin, add focused
@@ -84,7 +98,7 @@ DVR policy.
 ## Protocol quirks and version notes
 
 `subscriptionStart` can contain duplicate top-level `meta` keys
-(`src/htsp_server.c:4371–4375`; v36 :4219–4223). For every duplicate map key,
+(`src/htsp_server.c:4389–4393`; v36 :4219–4223). For every duplicate map key,
 at any depth, the codec keeps the first value, matching upstream
 `htsmsg_field_find` (`src/htsmsg.c:171–182`), which every `htsmsg_get_*` lookup
 uses. The decoded `meta` is therefore the codec header of the first stream that
@@ -116,84 +130,86 @@ The typed API exposes integer 0/1 flags as Boolean values, preserving nullable
 absence. Request encoding uses integer 0/1, not HTSP's separate BOOL type, where
 the pinned server reads an integer. Incoming message and reply data flags accept zero as false and any
 nonzero integer as true; non-integer types remain malformed. This includes
-normalized flags as well as raw `isNew` (`src/epg.c:1869`) and timeshift `full`.
+normalized flags as well as raw `isNew` and `isRepeat` (sent by
+`src/htsp_server.c:1446–1449`, restored from any stored integer by
+`src/epg.c:1910–1913`) and timeshift `full`.
 Reply envelope `success`, `noaccess`, and `connlimit` remain strict 0/1.
 Evidence below refers to pinned `src/htsp_server.c`:
 
 | Kotlin property / surface | Wire field | Lines |
 |---|---|---|
-| DVR update request `enabled` | `enabled` (s64 reader) | 2197 |
-| DVR add/update message `enabled` | `enabled` | 979 |
-| DVR add/update message `duplicate` | `duplicate` | 1186 (explicit 0/1 expression) |
-| Autorec add/update request `fullText`, `mergeText` | `fulltext`, `mergetext` (u32 readers) | 606-609; normalized output at 1249-1250 |
-| Event `isNew` | `isNew` | 1435 |
-| Event `isRepeat` | `isRepeat` | 1437 |
-| EPG query request `full` | `full` (u32 reader) | 1916 |
-| Async metadata request `epg` | `epg` (u32 reader) | 1661-1662 |
-| Subscribe request `ninetyKhz` | `90khz` (u32 reader) | 2659 |
-| Seek/skip request `absolute` | `absolute` (u32 reader) | 2825-2835 |
-| Skip message `absolute`, `error` | `absolute`, `error` | 4626-4629 (presence of 1; `error` is not a numeric code) |
-| Subscription stream `rdsUecp` | `rds_uecp` | 4368 (explicit 0/1 expression) |
-| Timeshift status `full` | `full` | 4597 |
+| DVR update request `enabled` | `enabled` (s64 reader) | 2215 |
+| DVR add/update message `enabled` | `enabled` | 980 |
+| DVR add/update message `duplicate` | `duplicate` | 1197 (explicit 0/1 expression) |
+| Autorec add/update request `fullText`, `mergeText` | `fulltext`, `mergetext` (u32 readers) | 606-609; normalized output at 1260-1261 |
+| Event `isNew` | `isNew` | 1447 |
+| Event `isRepeat` | `isRepeat` | 1449 |
+| EPG query request `full` | `full` (u32 reader) | 1934 |
+| Async metadata request `epg` | `epg` (u32 reader) | 1679-1680 |
+| Subscribe request `ninetyKhz` | `90khz` (u32 reader) | 2677 |
+| Seek/skip request `absolute` | `absolute` (u32 reader) | 2843-2853 |
+| Skip message `absolute`, `error` | `absolute`, `error` | 4644-4647 (presence of 1; `error` is not a numeric code) |
+| Subscription stream `rdsUecp` | `rds_uecp` | 4386 (explicit 0/1 expression) |
+| Timeshift status `full` | `full` | 4615 |
 
 `tagTitledIcon` remains numeric: line 947 forwards `ct_titled_icon` without
 establishing a 0/1 domain in this source. `duplicateDetection` (`dupDetect`) and
-`broadcastType` remain numeric policy values (lines 610-617, 1242-1244), not
+`broadcastType` remain numeric policy values (lines 610-617, 1253-1255), not
 enablement flags. Likewise `priority`, `audioType`, and `audioVersion` remain
-numeric codes (lines 663-664, 4361-4363); service `content` explicitly has three
+numeric codes (lines 663-664, 4379-4381); service `content` explicitly has three
 values (line 902). Counters, identifiers, masks, and measurements retain their
 integer widths. `epgQuery.fullText`/`mergeText` already use Boolean properties and
-the native BOOL wire type read by lines 1884-1886; that encoding is unchanged.
+the native BOOL wire type read by lines 1902-1904; that encoding is unchanged.
 
 ### Units
 
 Wire keys below match the request and server-message decoders. Lines refer to
-pinned `src/htsp_server.c` at 08d1cfbd; detailed EPG serialization is delegated
+pinned `src/htsp_server.c` at 1aa41209; detailed EPG serialization is delegated
 to `epg_object_serialize` there rather than expanded in the HTSP sender.
 
 | Current property | Wire field | Unit | Pinned lines |
 |---|---|---|---|
-| Event/event-update `startEpochSeconds`, `stopEpochSeconds` | `start`, `stop` | Epoch seconds | 1340–1341 |
-| Event/event-update `firstAiredEpochSeconds` | `firstAired` | Epoch seconds | 1433 |
-| DVR add/update, recording file, explicit-channel selector, update request `startEpochSeconds`, `stopEpochSeconds` | `start`, `stop` | Epoch seconds | 994–995, 1134–1137, 2086–2096, 2199–2200 |
-| DVR update `startExtraMinutes`, `stopExtraMinutes` | `startExtra`, `stopExtra` | Minutes | 996–997, 2201–2202 |
-| DVR update `retentionDays`, `removalDays` | `retention`, `removal` | Days or DVR policy sentinel | 1000–1005, 2203–2204 |
-| DVR update `playPositionSeconds` | `playposition` | Seconds | 1076, 2236, 3067 |
-| DVR cutpoint `startMs`, `endMs` | `start`, `end` | Milliseconds | 2563–2564 |
-| Get-events `maxTimeEpochSeconds` | `maxTime` | Epoch seconds | 1814–1829 |
-| Async metadata `lastUpdateEpochSeconds`, `epgMaxTimeEpochSeconds` | `lastUpdate`, `epgMaxTime` | Epoch seconds | 1663–1680 |
-| Detailed EPG `updatedEpochSeconds`, `startEpochSeconds`, `stopEpochSeconds`, `firstAiredEpochSeconds` | `up`, `start`, `stop`, `fair` | Epoch seconds | 1954–1979 (delegated serialization) |
-| File open/stat `modifiedAtEpochSeconds` | `mtime` | Epoch seconds | 797–798, 3100–3101 |
-| System-time `timeEpochSeconds` | `time` | Epoch seconds | 1637 |
-| File read `sizeBytes` | `size` | Bytes | 3008–3031 |
-| File read/seek, seek response `offsetBytes` | `offset` | Bytes | 3016–3017, 3123–3148 |
-| Subscription byte seek `sizeBytes` | `size` | Bytes | 2833–2836 |
-| Subscribe `queueDepthBytes` | `queueDepth` | Payload bytes | 2677–2678, 4192–4198 |
-| Hello request/response, connected state `protocolVersion` | `htspversion` | Unitless version | 1475–1488 |
-| Queue `delayUs` | `delay` | Microseconds, normalized from negotiated clock | Queued muxpkt `dts`: 4223; queue DTS scan: 4264–4279; difference emitted: 4280 |
-| Subscription stream `frameDurationUs` | `duration` | Microseconds, normalized from negotiated clock | 4351–4352 |
-| Timeshift `shift`, `start`, `end` | `shift`, `start`, `end` | Negotiated 90 kHz ticks or microseconds | 4598–4602 |
-| Subscription seek/skip `time` | `time` | Negotiated 90 kHz ticks or microseconds | 2828–2832, 4631 |
-| Descramble `ecmTime` | `ecmtime` | Not established by pinned sender | 4560 |
+| Event/event-update `startEpochSeconds`, `stopEpochSeconds` | `start`, `stop` | Epoch seconds | 1352–1353 |
+| Event/event-update `firstAiredEpochSeconds` | `firstAired` | Epoch seconds | 1445 |
+| DVR add/update, recording file, explicit-channel selector, update request `startEpochSeconds`, `stopEpochSeconds` | `start`, `stop` | Epoch seconds | 995–996, 1145–1148, 2104–2114, 2217–2218 |
+| DVR update `startExtraMinutes`, `stopExtraMinutes` | `startExtra`, `stopExtra` | Minutes | 997–998, 2219–2220 |
+| DVR update `retentionDays`, `removalDays` | `retention`, `removal` | Days or DVR policy sentinel | 1001–1006, 2221–2222 |
+| DVR update `playPositionSeconds` | `playposition` | Seconds | 1077, 2254, 3085 |
+| DVR cutpoint `startMs`, `endMs` | `start`, `end` | Milliseconds | 2581–2582 |
+| Get-events `maxTimeEpochSeconds` | `maxTime` | Epoch seconds | 1832–1847 |
+| Async metadata `lastUpdateEpochSeconds`, `epgMaxTimeEpochSeconds` | `lastUpdate`, `epgMaxTime` | Epoch seconds | 1681–1698 |
+| Detailed EPG `updatedEpochSeconds`, `startEpochSeconds`, `stopEpochSeconds`, `firstAiredEpochSeconds` | `up`, `start`, `stop`, `fair` | Epoch seconds | 1972–1997 (delegated serialization) |
+| File open/stat `modifiedAtEpochSeconds` | `mtime` | Epoch seconds | 797–798, 3118–3119 |
+| System-time `timeEpochSeconds` | `time` | Epoch seconds | 1655 |
+| File read `sizeBytes` | `size` | Bytes | 3026–3049 |
+| File read/seek, seek response `offsetBytes` | `offset` | Bytes | 3034–3035, 3141–3166 |
+| Subscription byte seek `sizeBytes` | `size` | Bytes | 2851–2854 |
+| Subscribe `queueDepthBytes` | `queueDepth` | Payload bytes | 2695–2696, 4210–4216 |
+| Hello request/response, connected state `protocolVersion` | `htspversion` | Unitless version | 1493–1506 |
+| Queue `delayUs` | `delay` | Microseconds, normalized from negotiated clock | Queued muxpkt `dts`: 4241; queue DTS scan: 4282–4297; difference emitted: 4298 |
+| Subscription stream `frameDurationUs` | `duration` | Microseconds, normalized from negotiated clock | 4369–4370 |
+| Timeshift `shift`, `start`, `end` | `shift`, `start`, `end` | Negotiated 90 kHz ticks or microseconds | 4616–4620 |
+| Subscription seek/skip `time` | `time` | Negotiated 90 kHz ticks or microseconds | 2846–2850, 4649 |
+| Descramble `ecmTime` | `ecmtime` | Not established by pinned sender | 4578 |
 
 ### Other protocol behavior
 
 - `ServerError.serverMessage` preserves the reply's string `error`. Pinned
   `src/htsp_server.c:486-492` passes `htsp_error`'s fixed `N_()` literals through
   `tvh_gettext_lang` for the connection language; examples include the DVR
-  refusals at lines 2149-2161. The `api` error conversion at lines 1559-1573
+  refusals at lines 2167-2179. The `api` error conversion at lines 1577-1591
   maps permission errors to `noaccess: 1`, missing/unimplemented methods to an
   empty reply, and other failures to the literal `N_("Bad request")`, not backend
   error text. These messages are untrusted display text, not stable codes.
 - DVR mutations require `success: 1` for typed success. `addDvrEntry` emits
-  `id` plus `success: 1` in pinned `src/htsp_server.c:2129-2130`; the decoder
+  `id` plus `success: 1` in pinned `src/htsp_server.c:2147-2148`; the decoder
   requires `id`. The unevidenced `dvrId` alias is ignored and cannot replace it.
-  Its failure branch at lines 2133-2134 emits `success: 0` plus the fixed
+  Its failure branch at lines 2151-2152 emits `success: 0` plus the fixed
   `error: "Could not add dvrEntry"`. `updateDvrEntry`, `stopDvrEntry`,
   `cancelDvrEntry`, and `deleteDvrEntry` return `htsp_success()` at lines
-  2244, 2262, 2280, and 2298 respectively (`success: 1`, lines 497-502).
+  2262, 2280, 2298, and 2316 respectively (`success: 1`, lines 497-502).
   Their DVR-entry lookup refusals use `htsp_error` via `htsp_findDvrEntry`
-  at lines 2144-2161. Integer `success: 0` is `ServerError`, with or without
+  at lines 2162-2179. Integer `success: 0` is `ServerError`, with or without
   an `error` string. Without an explicit error, missing or wrong-typed `success`,
   integers other than 0 or 1, or a malformed success payload, are `MalformedReply`.
 - Malformed `noaccess` (not an integer 0 or 1), non-string `error`, and typed
@@ -208,7 +224,7 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
   then ends with `Terminated(SUBSCRIBE_REJECTED)`. Older servers also check the
   limits at connect time.
 - The `api` method cannot report "not found". In pinned
-  `src/htsp_server.c:1541-1582`, `api_exec` results `ENOENT` and `ENOSYS` are
+  `src/htsp_server.c:1559-1600`, `api_exec` results `ENOENT` and `ENOSYS` are
   answered with an empty successful reply, the same as a call that produced no
   response. `src/api.c:86` returns `ENOSYS` for an unknown path, and handlers
   such as `src/api/api_idnode.c:670` return `ENOENT` for a missing object.
@@ -217,8 +233,8 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
   `"Bad request"` (`HtspResult.ServerError`).
 - `queueStatus.errors` is an optional u32 cumulative data-error counter, exposed
   as nullable `HtspQueueStatusMessage.errorCount`. Absence is not converted to
-  zero. In pinned `src/htsp_server.c:4184-4185`, packet errors accumulate in
-  `hs_data_errors`; lines 4250-4251 emit `errors` only when that count is nonzero.
+  zero. In pinned `src/htsp_server.c:4202-4203`, packet errors accumulate in
+  `hs_data_errors`; lines 4268-4269 emit `errors` only when that count is nonzero.
   There is no negotiated-version guard on this field. The
   counter is distinct from `Bdrops`, `Pdrops`, and `Idrops`.
 - Interpret fields by direction, wire or container type, presence, and known
@@ -231,7 +247,8 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
   selected DVR observations at v13; stream metadata at v5/v11 and top-level
   codec metadata at v17; subscription errors and satellite source metadata at
   v20; service provider names at v38; string UUIDs guaranteed from v41; and
-  absolute signal/SNR observations at v44; and the event repeat flag at v45. DVR `ageRating` is guaranteed from
+  absolute signal/SNR observations at v44; the event repeat flag at v45; and
+  typed programme images at v46. DVR `ageRating` is guaranteed from
   v37, but server-dependent at v36; see the introduction and gate history below.
   A minimum is compatibility evidence,
   while an unknown minimum remains `null`.
@@ -258,8 +275,8 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
   numbers, genres, and string lists. `lang_str_serialize_map` gives language
   maps strict string keys and values; string-list output is sorted and unique. `time_t` values remain Unix
   seconds. `cred` maps person names to role strings, produced by
-  `src/epggrab/module/xmltv.c:728–742` and serialized by `src/epg.c:1796–1798`.
-  `ratlab` (`HtspEpgBroadcastObject.ratingLabelUuid`) is a rating-label UUID (`src/epg.c:1770–1772`). The official reply is `TODO`.
+  `src/epggrab/module/xmltv.c:728–742` and serialized by `src/epg.c:1837–1839`.
+  `ratlab` (`HtspEpgBroadcastObject.ratingLabelUuid`) is a rating-label UUID (`src/epg.c:1808–1810`). The official reply is `TODO`.
 - `getDvrCutpoints` preserves `dc_start_ms` and `dc_end_ms`, source TAILQ order,
   overlaps, and duplicates. The official page does not define the millisecond
   origin, chronology, overlap, or uniqueness semantics.
@@ -298,7 +315,7 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
   prove the weight is applied.
 - `subscribe` exposes nullable Boolean `ninetyKhz`, encoded as u32 `90khz`:
   omission and false select native 1 MHz values, while true selects 90 kHz
-  (pinned `src/htsp_server.c:2659`). Reply `90khz` and `normts`
+  (pinned `src/htsp_server.c:2677`). Reply `90khz` and `normts`
   are strict optional flags exposed as nullable booleans; `normts` reports
   timestamp-origin normalization and does not select a rate. A subscription id
   is reserved before the request write and cannot be reused in the connection
@@ -342,12 +359,12 @@ to `epg_object_serialize` there rather than expanded in the HTSP sender.
 - The complete shared `event` shape from `htsp_build_event` is used by `getEvent`,
   `getEvents`, full `epgQuery`, `eventAdd`, and `eventUpdate`. Category and keyword
   are ordered string lists; credits are immutable
-  ordered `HtspProgrammeCredit` lists (`src/htsp_server.c:1371–1372`).
+  ordered `HtspProgrammeCredit` lists (`src/htsp_server.c:1383–1384`).
   The producer appends one field per person and role, so names can repeat
   (`src/epggrab/module/xmltv.c:729,742`); the list keeps every entry in wire
   order, unlike other maps, where the first field per name wins.
   All paths require `eventId`, `start`, and `stop`; channel is conditional
-  (`src/htsp_server.c:1337–1341`). Full updates replace the previous event,
+  (`src/htsp_server.c:1349–1353`). Full updates replace the previous event,
   including absent optional fields. All paths pass the negotiated version to
   the shared entity decoder and accept only evidenced field names (see below).
 - The 39 canonical request extensions mirror constructors, add timeout and
@@ -416,20 +433,20 @@ merging only non-null fields. All fields outside the required sets below are
 nullable; present malformed values remain errors. Line numbers refer to pinned
 `src/htsp_server.c`.
 
-| Entity | Always emitted at supported v36–45 (wire names) | Evidence |
+| Entity | Always emitted at supported v36–46 (wire names) | Evidence |
 |---|---|---|
 | Channel | `channelId`, `channelNumber`, `channelName`, `eventId`, `nextEventId`, `services`, `tags` | :857–923 |
 | Tag | `tagId`, `tagIndex`, `tagName`, `tagTitledIcon` | :930–956 |
-| Event | `eventId`, `start`, `stop` | :1337–1341 |
-| DVR entry | `id`, `enabled`, `start`, `stop`, `startExtra`, `stopExtra`, `retention`, `removal`, `priority`, `contentType`, `state` | :975–1012,1188; v36 :953–1125 |
-| Autorec | `id`, `enabled`, `maxDuration`, `minDuration`, `retention`, `removal`, `daysOfWeek`, `approxTime`, `start`, `startWindow`, `priority`, `startExtra`, `stopExtra`, `dupDetect`, `maxCount` | :1213–1243 |
-| Timerec | `id`, `enabled`, `daysOfWeek`, `retention`, `removal`, `priority`, `start`, `stop` | :1278–1291; required times use -1 for unset |
+| Event | `eventId`, `start`, `stop` | :1349–1353 |
+| DVR entry | `id`, `enabled`, `start`, `stop`, `startExtra`, `stopExtra`, `retention`, `removal`, `priority`, `contentType`, `state` | :976–1013,1199; v36 :953–1125 |
+| Autorec | `id`, `enabled`, `maxDuration`, `minDuration`, `retention`, `removal`, `daysOfWeek`, `approxTime`, `start`, `startWindow`, `priority`, `startExtra`, `stopExtra`, `dupDetect`, `maxCount` | :1224–1254 |
+| Timerec | `id`, `enabled`, `daysOfWeek`, `retention`, `removal`, `priority`, `start`, `stop` | :1289–1302; required times use -1 for unset |
 
 Required-from-N decoding is used only where upstream history shows that every
 server able to negotiate N emits the field at that negotiated version. Negotiation
-uses `MIN(HTSP_PROTO_VERSION, requested)` (:1503), so negotiated N implies a server
+uses `MIN(HTSP_PROTO_VERSION, requested)` (:1521), so negotiated N implies a server
 at least at N. An historical `htsp_version` gate or introduction at the protocol
-bump establishes the guarantee; the pinned v45 builder alone does not.
+bump establishes the guarantee; the pinned v46 builder alone does not.
 
 Channel `channelIdStr`, tag `tagIdStr`, and DVR `idStr` are required at v41+
 but nullable below v41. Commit `f9d5e885` (2024-09-02, at protocol 40) introduced
@@ -437,11 +454,11 @@ them behind `htsp->htsp_version > 40`; it precedes the v41 bump `18ff23f9` and
 every upstream ref at v41+. Autorec `broadcastType` is required at v39+ but
 nullable below v39: `fc5a1672` introduced it unconditionally in the v39 bump.
 Conditional strings remain nullable even after their introduction:
-autorec/timerec comments use `htsmsg_add_str2` (:1245,1292); configuration UUIDs
+autorec/timerec comments use `htsmsg_add_str2` (:1256,1303); configuration UUIDs
 (`dvrConfigUuid`, wire `configId`) require a linked configuration
-(:1151–1152,1261–1262,1304–1305). Tag members are an inclusion exception:
+(:1162–1163,1272–1273,1315–1316). Tag members are an inclusion exception:
 `channelIds == null` means not included, and empty means included with no members
-(:946–956; initial-sync omission/inclusion :1710,1720).
+(:946–956; initial-sync omission/inclusion :1728,1738).
 
 DVR `ageRating` is required at v37+ but optional at v36 (public type `Long?`).
 The v36 pin `81403634` predates its introduction: `d5010599` (2023-08-02, still
@@ -449,16 +466,16 @@ protocol 36) added it behind `htsp_version > 35`. The v37 bump `b061e641` change
 the gate to `> 36`; `d5010599` precedes that bump and all v37+ refs. Thus v36
 emission depends on the server, while every server negotiating v37+ emits it.
 Commit `55404da6` ("Remove HTSP client version test for rating labels and string
-UUIDs") later removed these gates, explaining the unconditional rating (:1013)
-and UUID emissions in pinned v45. Present malformed values fail at every version.
+UUIDs") later removed these gates, explaining the unconditional rating (:1014)
+and UUID emissions in pinned v46. Present malformed values fail at every version.
 
 `channelUpdate` containing `channelName` must validate the full channel. Without
 it, only `{channelId,eventId,nextEventId}` plus `method` is accepted and yields
-`HtspChannelNowNextMessage` (:3806–3823). `dvrEntryUpdate` containing `enabled`
+`HtspChannelNowNextMessage` (:3824–3841). `dvrEntryUpdate` containing `enabled`
 must validate the full recording. Otherwise `HtspDvrEntryStatsMessage` accepts
-only the fields outside `!statsonly` (:978–1153): `id`, v41+ `idStr`, required
+only the fields outside `!statsonly` (:979–1164): `id`, v41+ `idStr`, required
 `state`, optional `duplicate`, `error`, `subscriptionError`, `streamErrors`,
-`dataErrors`, and `dataSize`, plus `method` (:975–978,1155–1199). Duplicate is
+`dataErrors`, and `dataSize`, plus `method` (:976–979,1166–1210). Duplicate is
 emitted for upcoming recordings; errors depend on recording/completed state;
 subscription error is emitted for recording failure; error counters require
 nonzero values; size requires a known recording/completed file size. Null stats
@@ -467,13 +484,13 @@ Missing discriminators with other full fields and unexpected sparse fields are
 malformed. RPC `seq` envelopes are classified before this dispatch.
 
 Decoders accept only field names emitted for that entity/message by a supported
-server. The audit compares minimum-supported v36 (`81403634`) and pinned v45
-(`08d1cfbd`), both `src/htsp_server.c`; no dual-name aliases are needed. DVR
-`channel` is canonical (v36 :969; v45 :981), whereas events use `channelId`
-(v36 :1255; v45 :1339). Recording files use `filename` (v36 :1055–1058;
-v45 :1127–1130); only the enclosing DVR entity uses `path` (:1077 / :1149).
+server. The audit compares minimum-supported v36 (`81403634`) and pinned v46
+(`1aa41209`), both `src/htsp_server.c`; no dual-name aliases are needed. DVR
+`channel` is canonical (v36 :969; v46 :982), whereas events use `channelId`
+(v36 :1255; v46 :1351). Recording files use `filename` (v36 :1055–1058;
+v46 :1138–1141); only the enclosing DVR entity uses `path` (:1078 / :1160).
 Recording-file entries have no `id`: the builder copies stored `de_files` maps
-and sets `filename`, `info`, `start`, `stop`, and `size` (:1123–1144). Stored
+and sets `filename`, `info`, `start`, `stop`, and `size` (:1134–1155). Stored
 entries are populated by pinned `src/dvr/dvr_rec.c` (`filename` :1311,
 `info`/`start` :1534–1535, `stop` :2109); no writer sets an `id` key.
 Unknown keys are ignored in full snapshots, but cannot replace required fields;
@@ -481,14 +498,14 @@ the exact sparse shapes above reject unknown keys. Event `category` is a list,
 and episode ordinals/counts are flat, separately named fields (:706–725 / :709–728).
 
 Autorec `approxTime`, `start`, and `startWindow` are required wire s32 values;
-`-1` means unset and decodes to null (v36 :1151–1163; v45 :1226–1238).
+`-1` means unset and decodes to null (v36 :1151–1163; v46 :1237–1249).
 All other values must be in `0..1439`; out-of-range values are malformed.
 Pinned `src/dvr/dvr_autorec.c:733–750` (`dvr_autorec_entry_class_time_set`,
 check :744) maps any value >= 1440, empty input, or non-digit input to -1 before
-the builder emits `start`/`startWindow` (:1237–1238). `approxTime` is the circular
+the builder emits `start`/`startWindow` (:1248–1249). `approxTime` is the circular
 midpoint modulo 1440 of a set start/window pair, or unset when either is unset.
 Timerec uses the same domain: `src/dvr/dvr_timerec.c:367–384` (check :378) applies
-the same setter normalization before `start`/`stop` emission (:1290–1291).
+the same setter normalization before `start`/`stop` emission (:1301–1302).
 Request-side time validation also uses `0..1439`.
 
 ## Maintenance

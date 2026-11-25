@@ -66,6 +66,9 @@ internal class `HtspEntityDecoder-internal`(
             image = optionalString("image"), dvrId = optionalU32("dvrId"), nextEventId = optionalU32("nextEventId"),
             credits = decodeProgrammeCredits(fields, "credits", malformed),
             isRepeat = optionalFlag("isRepeat"),
+            imagePoster = optionalString("imagePoster"),
+            imageBackdrop = optionalString("imageBackdrop"),
+            imageStill = optionalString("imageStill"),
         )
     }
 
@@ -98,6 +101,9 @@ internal class `HtspEntityDecoder-internal`(
             error = optionalString("error"), subscriptionError = optionalString("subscriptionError"),
             streamErrors = optionalU32("streamErrors"), dataErrors = optionalU32("dataErrors"),
             dataSizeBytes = optionalS64("dataSize"),
+            imagePoster = optionalString("imagePoster"),
+            imageBackdrop = optionalString("imageBackdrop"),
+            imageStill = optionalString("imageStill"),
         )
     }
 
