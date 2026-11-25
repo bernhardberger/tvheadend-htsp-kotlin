@@ -2,62 +2,62 @@ package at.bernhardberger.tvheadend.htsp.model
 
 import at.bernhardberger.tvheadend.htsp.wire.requireU32
 
-/** Full automatic recording rule (pinned htsp_server.c:1207–1266). */
+/** Full automatic recording rule (pinned htsp_server.c:1218–1277). */
 @ConsistentCopyVisibility
 public data class HtspAutorecEntry private constructor(
-    /** Rule UUID (:1213). */
+    /** Rule UUID (:1224). */
     public val id: String,
-    /** Enabled flag (:1214). */
+    /** Enabled flag (:1225). */
     public val enabled: Boolean,
-    /** Maximum duration (:1215). */
+    /** Maximum duration (:1226). */
     public val maxDurationSeconds: Long,
-    /** Minimum duration (:1216). */
+    /** Minimum duration (:1227). */
     public val minDurationSeconds: Long,
-    /** Retention days or policy sentinel (:1218–1222). */
+    /** Retention days or policy sentinel (:1229–1233). */
     public val retentionDays: Long,
-    /** Removal days or policy sentinel (:1224). */
+    /** Removal days or policy sentinel (:1235). */
     public val removalDays: Long,
-    /** Weekday bitmask (:1225). */
+    /** Weekday bitmask (:1236). */
     public val daysOfWeekMask: Long,
-    /** Approximate time in 0..1439; null means wire -1, unset (:1234–1236). */
+    /** Approximate time in 0..1439; null means wire -1, unset (:1245–1247). */
     public val approximateStartMinutesSinceMidnight: Int?,
-    /** Start minutes in 0..1439; null means wire -1, unset (:1237; dvr_autorec.c:733–750). */
+    /** Start minutes in 0..1439; null means wire -1, unset (:1248; dvr_autorec.c:733–750). */
     public val startMinutesSinceMidnight: Int?,
-    /** Window-end minutes in 0..1439; null means wire -1, unset (:1238; dvr_autorec.c:733–750). */
+    /** Window-end minutes in 0..1439; null means wire -1, unset (:1249; dvr_autorec.c:733–750). */
     public val startWindowEndMinutesSinceMidnight: Int?,
-    /** Priority code (:1239). */
+    /** Priority code (:1250). */
     public val priority: Long,
-    /** Pre-recording padding (:1240). */
+    /** Pre-recording padding (:1251). */
     public val startExtraMinutes: Long,
-    /** Post-recording padding (:1241). */
+    /** Post-recording padding (:1252). */
     public val stopExtraMinutes: Long,
-    /** Duplicate-detection policy (:1242). */
+    /** Duplicate-detection policy (:1253). */
     public val duplicateDetection: Long,
-    /** Recording limit (:1243). */
+    /** Recording limit (:1254). */
     public val maximumRecordingCount: Long,
     /** Broadcast policy, introduced in v39 (:1244); absent on older servers. */
     public val broadcastType: Long? = null,
-    /** Optional comment, introduced in v42 (:1245). */
+    /** Optional comment, introduced in v42 (:1256). */
     public val comment: String? = null,
-    /** Optional title expression (:1247–1248). */
+    /** Optional title expression (:1258–1259). */
     public val title: String? = null,
-    /** Search full text, emitted with title (:1249). */
+    /** Search full text, emitted with title (:1260). */
     public val fullText: Boolean? = null,
-    /** Merge text, emitted with title (:1250). */
+    /** Merge text, emitted with title (:1261). */
     public val mergeText: Boolean? = null,
-    /** Optional name (:1252). */
+    /** Optional name (:1263). */
     public val name: String? = null,
-    /** Optional directory (:1253–1254). */
+    /** Optional directory (:1264–1265). */
     public val directory: String? = null,
-    /** Optional owner (:1255). */
+    /** Optional owner (:1266). */
     public val owner: String? = null,
-    /** Optional creator (:1256). */
+    /** Optional creator (:1267). */
     public val creator: String? = null,
-    /** Channel filter; null means no channel restriction (:1257–1258). */
+    /** Channel filter; null means no channel restriction (:1268–1269). */
     public val channelId: Long? = null,
-    /** Optional series link (:1259–1260). */
+    /** Optional series link (:1270–1271). */
     public val seriesLinkUri: String? = null,
-    /** Optional configuration UUID, wire `configId`, introduced in v40 (:1261–1262). */
+    /** Optional configuration UUID, wire `configId`, introduced in v40 (:1272–1273). */
     public val dvrConfigUuid: String? = null,
     private val immutableSnapshot: Unit,
 ) {

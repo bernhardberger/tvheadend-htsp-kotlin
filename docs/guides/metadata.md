@@ -137,7 +137,7 @@ The options select what the server sends:
 - `epgMaxTimeEpochSeconds` sets how far ahead the server pushes EPG events. The
   server turns it into a window from the current time, at least 10 minutes
   long, and moves that window forward every 30 seconds, so new events keep
-  arriving as time passes (`src/htsp_server.c:1667-1678`, `:4085-4108`). When EPG
+  arriving as time passes (`src/htsp_server.c:1685-1696`, `:4103-4126`). When EPG
   is not on yet, zero or a time that is not in the future means no limit. On a
   connection that already has EPG on, it can only extend an existing limit; it
   cannot add or remove one.

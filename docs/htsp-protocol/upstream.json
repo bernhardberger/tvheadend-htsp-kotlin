@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/tvheadend/tvheadend",
-  "revision": "08d1cfbd5619f4230bd404d9a591923be892a83b",
-  "htspProtoVersion": 45,
+  "revision": "1aa41209fd3f87da65af7deb533d87ab48745ff3",
+  "htspProtoVersion": 46,
   "files": {
     "src/htsp_server.c": {
-      "gitBlobSha1": "876c7e45198b6cacc4796a381050dacc44c393da",
-      "bytes": 135446
+      "gitBlobSha1": "71c26a0a2c31bd3fee71b70fb683eb258908ea91",
+      "bytes": 136323
     },
     "src/htsp_server.h": {
       "gitBlobSha1": "3b6470d51ab45e1d9bc9bacc710b0e1f6f49b1b0",
@@ -22,12 +22,12 @@
       ]
     },
     "src/epg.c": {
-      "gitBlobSha1": "fb5d072c034685230ac0e710c9d6ba9d62ad8ed7",
-      "bytes": 89889
+      "gitBlobSha1": "f72749310115b6225dbf22ec661241560469ebd7",
+      "bytes": 91664
     },
     "src/epg.h": {
-      "gitBlobSha1": "fa84ae00d1fd9b37358352876b5660534dac527c",
-      "bytes": 22499
+      "gitBlobSha1": "e37c9ceb2d0a7f3b8b3b7e873760b430b8b82c25",
+      "bytes": 23406
     },
     "src/lang_str.c": {
       "gitBlobSha1": "c0cfbe016938472778ef6aec0e6e0b829a0abd31",

@@ -119,8 +119,10 @@ class HtspMessageDataClassTest {
     fun entityCopiesRetainAllComponentsAndHideSnapshotMarker() {
         val entities = listOf(
             decoder.channel(metadataFixture("channelAdd")), decoder.tag(metadataFixture("tagAdd")),
-            decoder.event(metadataFixture("eventAdd") + mapOf("category" to listOf("Drama"), "episodeNumber" to 42L)),
-            decoder.dvrEntry(metadataFixture("dvrEntryAdd") + mapOf("seasonCount" to 4L, "episode" to "S1E2")),
+            decoder.event(metadataFixture("eventAdd") + mapOf("category" to listOf("Drama"), "episodeNumber" to 42L,
+                "imagePoster" to "event-poster", "imageBackdrop" to "", "imageStill" to "event-still")),
+            decoder.dvrEntry(metadataFixture("dvrEntryAdd") + mapOf("seasonCount" to 4L, "episode" to "S1E2",
+                "imagePoster" to "dvr-poster", "imageBackdrop" to "dvr-backdrop", "imageStill" to "")),
             decoder.autorecEntry(metadataFixture("autorecEntryAdd")), decoder.timerecEntry(metadataFixture("timerecEntryAdd")),
             HtspDvrRecordingFile("recording.ts", 1L, 2L, 3L, HtspDvrRecordingInfo(emptyList())),
         )

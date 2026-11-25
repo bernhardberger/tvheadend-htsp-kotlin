@@ -16,7 +16,7 @@ public data class HtspChannelUpdateMessage(
     public val channel: HtspChannel,
 ) : HtspMetadataMessage
 
-/** Updates only the current and next event references (pinned htsp_server.c:3806–3824). */
+/** Updates only the current and next event references (pinned htsp_server.c:3824–3842). */
 public data class HtspChannelNowNextMessage(
     /** Unsigned channel identity. */
     public val channelId: Long,
@@ -47,7 +47,7 @@ public data class HtspTagAddMessage(
 
 /**
  * Inserts or replaces tag metadata (pinned htsp_server.c:930–956).
- * Tags created after initial sync arrive only as this message (:3856–3870).
+ * Tags created after initial sync arrive only as this message (:3874–3888).
  */
 public data class HtspTagUpdateMessage(
     /** Full metadata; retain previous membership only when membership is null. */

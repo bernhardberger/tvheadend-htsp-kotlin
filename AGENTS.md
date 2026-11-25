@@ -73,7 +73,7 @@ official Tvheadend software or as wholly original work.
   Error values never carry client secrets, credentials, endpoints or throwables;
   `ServerError` may carry the server's own error text, which `toString` never renders.
 - `docs/htsp-protocol/` holds the upstream pin record and protocol notes. The
-  client requests HTSP v45 by default, matching the typed surface's v45
+  client requests HTSP v46 by default, matching the typed surface's v46
   coverage ceiling. The protocol surface is hand-maintained; a method or
   wire-field change ships with a focused regression test in the same change,
   extending the existing wire or codec test of that message before adding one.

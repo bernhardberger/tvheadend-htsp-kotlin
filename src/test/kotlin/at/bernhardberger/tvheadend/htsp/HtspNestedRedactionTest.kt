@@ -3,6 +3,7 @@ package at.bernhardberger.tvheadend.htsp
 import at.bernhardberger.tvheadend.htsp.connection.*
 import at.bernhardberger.tvheadend.htsp.messages.*
 import at.bernhardberger.tvheadend.htsp.model.*
+import at.bernhardberger.tvheadend.htsp.requests.*
 import at.bernhardberger.tvheadend.htsp.wire.HtspBinary
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -87,7 +88,18 @@ internal class HtspNestedRedactionTest {
             entryId = 1L, enabled = true, startEpochSeconds = 0L, stopEpochSeconds = 1L,
             startExtraMinutes = 0L, stopExtraMinutes = 0L, retentionDays = 0L, removalDays = 0L,
             priority = 0L, contentType = 0L, ageRating = 0L, state = secret, files = listOf(file),
+            fanartImage = secret, imagePoster = secret, imageBackdrop = secret, imageStill = secret,
         )
+        val event = HtspEvent(eventId = 1L, startEpochSeconds = 0L, stopEpochSeconds = 1L,
+            imagePoster = secret, imageBackdrop = secret, imageStill = secret)
+        val broadcast = HtspRequestCodecs.decode(GetEpgObjectRequest(1L),
+            mapOf("id" to 1L, "tp" to 1L, "up" to 2L, "start" to 3L, "stop" to 4L), 46L).broadcast
+            .copy(imagePoster = secret, imageBackdrop = secret, imageStill = secret)
+        for (value in listOf(event, broadcast, GetEventResponse(event), GetEventsResponse(listOf(event)),
+            EpgQueryResponse.Events(listOf(event)), GetEpgObjectResponse(broadcast),
+            HtspEventAddMessage(event), HtspEventUpdateMessage(event))) {
+            assertRedacted(value, secret)
+        }
         val channel = HtspChannel(1L, null, 1L, null, secret, null, 0L, 0L, listOf(service), emptyList())
         for (message in listOf(
             HtspDvrEntryAddMessage(entry), HtspDvrEntryUpdateMessage(entry),

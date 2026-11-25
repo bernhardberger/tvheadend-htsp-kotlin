@@ -3,24 +3,40 @@
 ## [Unreleased]
 
 - `HtspEvent.isRepeat` reports the event flag `isRepeat` that Tvheadend sends
-  next to `isNew` from HTSP 45. It is `true` when the server flags the broadcast
-  as a repeat and `null` when the server does not flag it. Older servers never
-  send it, and `isNew` being `null` or `false` does not mean the broadcast is a
-  repeat. The server sends the flag whatever version the client asked for.
-- The `1.0.0-rc.2` `HtspEvent` constructor and `copy` signatures stay available,
-  including their default-argument bridges. Callers compiled against
-  `1.0.0-rc.2` keep linking, and their `copy` calls keep the repeat flag. Kotlin
-  source compiles unchanged, except inferred callable references such as
-  `event::copy`, whose arity changes (see `docs/versioning.md`). Java source
-  cannot see the hidden overloads and has no default arguments, so Java
-  constructor and `copy` calls must pass the trailing nullable `Boolean`; pass
-  `event.isRepeat()` to `copy` to keep the flag.
-- The client now requests HTSP v45 by default instead of v44. A v45 server
-  behaves the same as before for everything else the client sends or decodes,
-  so `HtspLiveConnection.protocolVersion` reports 45 on v45 servers. Pass
-  `requestedProtocolVersion = 44` to keep the old request.
+  next to `isNew` from HTSP 45
+  ([tvheadend/tvheadend#2396](https://github.com/tvheadend/tvheadend/pull/2396)).
+  It is `true` when the server flags the broadcast as a repeat and `null` when
+  the server does not flag it. Older servers never send it, and `isNew` being
+  `null` or `false` does not mean the broadcast is a repeat. The server sends
+  the flag whatever version the client asked for.
+- Decode typed programme artwork from HTSP 46
+  ([tvheadend/tvheadend#2343](https://github.com/tvheadend/tvheadend/pull/2343)):
+  `imagePoster`, `imageBackdrop` and `imageStill` on `HtspEvent`, `HtspDvrEntry`
+  and `HtspEpgBroadcastObject`. An empty string means the server has no such
+  image; null means the field was absent. Full event and DVR messages expose the
+  artwork through their shared entities; statistics-only DVR updates remain
+  unchanged.
+- From HTSP 46 every full DVR entry message carries `fanartImage`: the fanart
+  image, else the backdrop image, else an empty string. Older servers send it
+  only when set. Code that falls back to
+  another image when `HtspDvrEntry.fanartImage` is `null` must now treat `""`
+  as missing too.
+- The client now requests HTSP v46 by default instead of v44; older servers
+  still negotiate down. Pass `requestedProtocolVersion = 44` to keep the
+  previous request.
+- The `1.0.0-rc.2` constructor and `copy` signatures of the three evolving
+  records stay available, including their default-argument bridges. Callers
+  compiled against `1.0.0-rc.2` keep linking, and their `copy` calls keep the
+  new repeat flag and artwork fields. Kotlin source compiles unchanged, except
+  inferred callable references such as `event::copy`, whose arity changes (see
+  `docs/versioning.md`). Java source cannot see the hidden overloads and has no
+  default arguments, so Java constructor and `copy` calls must pass the new
+  trailing arguments; pass the current values to `copy` to keep them.
+- `HtspEpgBroadcastObject` string rendering is now redacted, including through
+  response wrappers, so programme artwork references are not logged. Shared
+  event and DVR entities already redact their contents.
 - The protocol notes and source citations now pin Tvheadend master
-  `08d1cfbd5619f4230bd404d9a591923be892a83b`, which reports HTSP v45.
+  `1aa41209f`, which reports HTSP v46.
 
 ## [1.0.0-rc.2] - 2026-11-14
 
